@@ -23,9 +23,16 @@ bot.on('message', async function(msg) {
             //let strony = odrabiamy.getPagesOfBook(ksiazki);
             await new Promise(resolve => setTimeout(resolve, 5000));
         }
+        else if(cmd.toLowerCase() === 'choose') {
+            args = args.join();
+            args = args.split(/ | /);
+            let min = Math.ceil(0);
+            let max = Math.floor(args.length - 1)
+            msg.channel.send(`Wybrano \`${args[Math.floor(Math.random() * (min - max) + min)]}\``)
+        }
         //else if() wsparcie dla innych komend
         else {
-            msg.channel.send('Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`');
+            msg.channel.send('Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`');
         }
     }
 })
