@@ -18,11 +18,13 @@ bot.on('message', msg => {
         if(cmd.toLowerCase() === 'odrabiamy') {
             console.log('got !odrabiamy');
             msg.channel.send('odebrano !odrabiamy');
-            odrabiamy.getBooksBySubject(args[0], args[1])
+            let ksiazki = odrabiamy.getBooksBySubject(args[0], args[1]);
+            msg.channel.send(JSON.stringify(ksiazki));
+            let strony = odrabiamy.getPagesOfBook(ksiazka);
         }
         //else if() wsparcie dla innych komend
         else {
-            msg.channel.send('Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`');
+            msg.channel.send('Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`');
         }
     }
 })
