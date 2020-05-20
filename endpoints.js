@@ -32,6 +32,9 @@ server.get('/ksiazki',function(req, res) {
     params = webserver.GetParams(req)
     if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
         res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
+        if(params.klasa&&params.book&&params.subj){
+            res.write(JSON.stringify(odrabiamyjs.getBooksBySubject(params.klasa,params.subj)))
+        }else
         if(params.klasa&&params.book){
             res.write(JSON.stringify(odrabiamyjs.getBookByID(params.klasa,params.book)))
         }else
