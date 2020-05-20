@@ -12,6 +12,14 @@ bot.on('message', msg => {
     if(msg.content.startsWith('!')) {
         console.log('got a valid command');
         let wiad = msg.content.slice(1);
-        let args = msg.content.split(/[ ]+/);
+        let args = wiad.split(/[ ]+/);
+        let cmd = args.shift();
+        if(cmd.toLowerCase()==='odrabiamy') {
+
+        }
+        //else if() wsparcie dla innych komend
+        else {
+            msg.channel.send('Niepoprawna komenda, wspierane polecenia:\n- Odrabiamy [args]');
+        }
     }
 })
