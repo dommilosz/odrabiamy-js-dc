@@ -51,6 +51,22 @@ server.get('/ksiazki',function(req, res) {
         res.end()
     }
 })
+server.get('/pages',function(req, res) {
+    params = webserver.GetParams(req)
+    if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
+        res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
+        if(params.klasa&&params.book){
+            res.write(JSON.stringify(odrabiamyjs.getPagesOfBook( odrabiamyjs.getBookByID(params.klasa,params.book))))
+        }
+        
+        res.end()
+    }else{
+        res.writeHead(200)
+        res.write(fs.readFileSync('./Server/login.html'))
+        res.end()
+    }
+})
+
 
 server.get('/rdata',function(req, res) {
     params = webserver.GetParams(req)

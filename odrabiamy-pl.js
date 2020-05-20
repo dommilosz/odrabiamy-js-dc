@@ -75,3 +75,6 @@ module.exports.getBooksBySubject = function(klasa,subj){
 module.exports.getALLBooks = function(){
 	return this.Ksiazki;
 }
+module.exports.getPagesOfBook= function(book){
+	return book.pages
+}
