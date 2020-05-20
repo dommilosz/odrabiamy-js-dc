@@ -78,3 +78,91 @@ module.exports.getALLBooks = function(){
 module.exports.getPagesOfBook= function(book){
 	return book.pages
 }
+module.exports.getExList= function(book,page){
+	return this.REQ_GET(`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`)
+}
+module.exports.GetExercise= function(ex){ //ex from getExList();
+	let id = ex.book.id;
+	let exid = ex.id;
+	let page = ex.page;
+	let subj = ex.book.subject;
+	let url = `https://odrabiamy.pl/${subj}/ksiazka-${id}/strona-${page}/zadanie-${exid}`
+	this.GetEX(url);
+}
+const puppeter = require('puppeteer');
+browser = null;
+cookies = '';
+module.exports.GetEX = async function odrabiamyGetExercise(href) 
+{
+	
+	let page = await browser.newPage();
+	await page.setCookie(...cookies)
+    await page.goto(href);
+    await page.waitFor(500);
+        
+        try{await page.click('#frontend-root > div > div.rodo-modal-blur > div > div > div.rodo-form > div > div.buttons.rodo-box-item > button')}catch{}
+        await page.waitForSelector(".username");
+        await page.waitFor(() => !document.querySelector(".freePart"));
+        await page.waitFor(500);
+
+		const sol = await page.evaluate(() => {
+			let elements = document.getElementsByClassName('exercise-solution')
+			return elements;
+		});
+    	const rect = await page.evaluate(() => {
+        let elements = document.getElementsByClassName('exercise-solution')
+        let element = null
+        if(elements.length > 0)
+            element = elements[0]
+        else
+            return null
+        const {x, y, width, height} = element.getBoundingClientRect();
+        return {left: x, top: y, width, height, id: element.id};
+    });
+
+    if(rect)
+    {
+        image = await page.screenshot({
+            clip: {
+                x: rect.left - 0,
+                y: rect.top - 0,
+                width: rect.width + 0 * 2,
+                height: rect.height + 0 * 2
+            }
+        });
+        
+        page.close()
+        return Buffer.from(image).toString('base64');
+    }
+    
+            
+    
+
+}
+module.exports.GetCookie = async function() 
+{
+	try{browser = await puppeter.launch({args: ['--no-sandbox'],devtools:true})}
+    catch(ex){
+        try{
+			console.log(ex)
+        browser = await puppeter.launch({ executablePath: 'chromium-browser' })}catch{
+            browser = await puppeter.launch({
+                'args': [
+                    '--disable-web-security',
+                    '--allow-http-screen-capture',
+                    '--allow-running-insecure-content',
+                    '--disable-features=site-per-process',
+                    '--no-sandbox'
+                ],
+                headless: true,
+                executablePath: '/usr/bin/chromium-browser',
+            });
+        }
+    }
+	let page = await browser.newPage();
+	await page.goto('https://odrabiamy.pl/?signIn=true&type=Login');
+	await page.waitForSelector(".username");
+	await page.waitFor(500);
+	cookies = await page.cookies()
+	page.close()
+}
