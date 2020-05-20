@@ -24,11 +24,12 @@ bot.on('message', async function(msg) {
             await new Promise(resolve => setTimeout(resolve, 5000));
         }
         else if(cmd.toLowerCase() === 'choose') {
-            args = args.join();
-            args = args.split(/ | /);
+            args = args.join(" ");
+            args = args.split(/[ ]+[|][ ]+/);
             let min = Math.ceil(0);
-            let max = Math.floor(args.length - 1)
-            msg.channel.send(`Wybrano \`${args[Math.floor(Math.random() * (min - max) + min)]}\``)
+            let max = Math.floor(args.length)
+            msg.channel.send(`Wybrano \`${args[Math.floor(Math.random() * (max - min) + min)]}\``)
+            //args[Math.floor(Math.random() * (min - max) + min)]
         }
         //else if() wsparcie dla innych komend
         else {

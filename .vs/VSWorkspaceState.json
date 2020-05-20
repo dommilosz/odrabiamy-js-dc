@@ -1,10 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.git",
     "\\DCBot",
     "\\Server"
   ],
-  "SelectedNode": "\\.git",
+  "SelectedNode": "\\DCBot\\bot.js",
   "PreviewInSolutionExplorer": false
 }
