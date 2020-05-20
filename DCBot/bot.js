@@ -9,7 +9,7 @@ bot.on('ready', () => {
 
 bot.login(json['token']);
 
-bot.on('message', msg => {
+bot.on('message', async function(msg) {
     if(msg.content.startsWith('!')) {
         console.log('got a valid command');
         let wiad = msg.content.slice(1).trim();
@@ -19,8 +19,9 @@ bot.on('message', msg => {
             console.log('got !odrabiamy');
             msg.channel.send('odebrano !odrabiamy');
             let ksiazki = odrabiamy.getBooksBySubject(args[0], args[1]);
-            msg.channel.send(JSON.stringify(ksiazki));
-            let strony = odrabiamy.getPagesOfBook(ksiazka);
+            for(var item in JSON.stringify(ksiazki).match(/[\s\S]{1,1500}/g).toString())
+            //let strony = odrabiamy.getPagesOfBook(ksiazki);
+            await new Promise(resolve => setTimeout(resolve, 5000));
         }
         //else if() wsparcie dla innych komend
         else {
