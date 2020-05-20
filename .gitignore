@@ -118,3 +118,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 DCBot/klucz.json
+.node-xmlhttprequest-sync-*
