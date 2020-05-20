@@ -55,8 +55,8 @@ server.get('/pages',function(req, res) {
     params = webserver.GetParams(req)
     if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
         res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
-        if(params.klasa&&params.book&&params.subj){
-            res.write(JSON.stringify(odrabiamyjs.getPagesOfBook( odrabiamyjs.getBookById(params.klasa,params.book))))
+        if(params.klasa&&params.book){
+            res.write(JSON.stringify(odrabiamyjs.getPagesOfBook( odrabiamyjs.getBookByID(params.klasa,params.book))))
         }
         
         res.end()
