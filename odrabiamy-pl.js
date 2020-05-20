@@ -1,6 +1,7 @@
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 module.exports.JSON_RESP = {};
 module.exports.Ksiazki = {};
+module.exports.Ksiazki_Subjects = {};
 
 
 module.exports.REQ_GET = function REQ_GET(url) {
@@ -30,6 +31,8 @@ module.exports.GetData = function (){
 		
 		var donegrades = [];
 		var grades = el.grades_number.split(',');
+		var subj = el.subject;
+
 		grades.forEach(el2=>{
 			if(!this.Ksiazki[el2]){
 				this.Ksiazki[el2] = [];
@@ -38,10 +41,19 @@ module.exports.GetData = function (){
 			{
 			this.Ksiazki[el2].push(el);
 			donegrades.push(el2);
+			if(!this.Ksiazki_Subjects[el2])this.Ksiazki_Subjects[el2] = {}
+			if(!this.Ksiazki_Subjects[el2][subj]){
+				this.Ksiazki_Subjects[el2][subj] = [];
+			}
+			this.Ksiazki_Subjects[el2][subj].push(el)
 			}
 		})
+
 		
+
 	})
+	
+
 }
 
 this.GetData();
@@ -56,6 +68,9 @@ module.exports.getBookByID = function(klasa,id){
 }
 module.exports.getBooksByClass = function(klasa){
 	return this.Ksiazki[klasa]
+}
+module.exports.getBooksBySubject = function(klasa,subj){
+	return this.Ksiazki_Subjects[klasa][subj]
 }
 module.exports.getALLBooks = function(){
 	return this.Ksiazki;
