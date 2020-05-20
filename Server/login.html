@@ -1,0 +1,157 @@
+<html>
+<head>
+  <title>NWM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        
+        /* The Modal (background) */
+        .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          padding-top: 100px; /* Location of the box */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        
+        /* Modal Content */
+        .modal-content {
+          background-color: rgb(32, 32, 32);
+          margin: auto;
+          padding: 20px;
+          border: 1px solid red;
+          width: 40%;
+        }
+        
+        /* The Close Button */
+        .close {
+          color: #aaaaaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+          color: #000;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        </style>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    background-color: rgb(16, 16, 26);
+}
+
+h1, .content {
+    margin: 0;
+    color: rgb(228, 228, 228);
+    font-family: sans-serif;
+}
+</style>
+<script>
+
+
+function httpGet()
+{
+    
+    function httpGetAsync(theUrl)
+    {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            console.log(xmlHttp.readyState);
+            console.log(xmlHttp.responseText);
+        }
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+    }
+    httpGetAsync(theUrl);
+}
+function GetHash()
+	{
+        theUrl = "/auth?password="+document.getElementsByClassName("passwinp")[0].value+"?username="+document.getElementsByClassName("usrinp")[0].value;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            window.location.href = "?hash="+this.responseText+"?username="+document.getElementsByClassName("usrinp")[0].value;
+		}else if(this.status!=200&&this.readyState == 4)
+		{
+            console.log(this.status);
+            if(this.status==403){
+            openmodal(this.responseText);
+            }
+            else {openmodal("Something went wrong\nTry Again!");}
+		}
+	};
+	xhttp.open("GET", theUrl, true);
+	xhttp.send();
+  }
+	
+	
+	
+</script>
+</head>
+<body onload="OnLoad()">
+<div class="content">
+<div>Enter Password (set in <code>config.json</code>) : </div>
+  USERNAME : <input class="usrinp" id="usrinp" name="username"><br>
+  PASSWORD : <input class="passwinp" id="passwinp" type="password" name="password">
+  <button class="buttinp" id="buttinp" value="Log In" onclick="GetHash()">Log In</button>
+  
+</form>
+<div id="InvalidPassword" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="modal-txt">ERROR</p>
+    </div>
+  
+  </div>
+</div>
+<script>
+    // Get the modal
+    var modal = document.getElementById("InvalidPassword");
+    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks the button, open the modal 
+    function openmodal(txt){
+      modal.style.display = "block";
+      document.getElementById("modal-txt").innerHTML=txt;
+      
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    function OnLoad(){
+        if(document.URL.includes("?hash="))
+        window.location.href = "/";
+    }
+    </script>
+</body></html>

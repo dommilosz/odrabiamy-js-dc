@@ -1,0 +1,14 @@
+{
+    "ports":{
+        "minecraft":25587,
+        "web":21370
+    },
+    "openBrowserOnStart": false,
+    "password":"11211",
+    "MCversion":"1.12.2",
+    "debug":{
+        "serverip":"localhost",
+        "serverport":"25565",
+        "bindip":"0.0.0.0"
+    }
+}
