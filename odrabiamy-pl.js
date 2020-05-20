@@ -79,15 +79,17 @@ module.exports.getPagesOfBook= function(book){
 	return book.pages
 }
 module.exports.getExList= function(book,page){
-	return this.REQ_GET(`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`)
+	let resp = this.REQ_GET(`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`)
+	return resp;
 }
-module.exports.GetExercise= function(ex){ //ex from getExList();
+module.exports.GetExercise= function(ex,index){ //ex from getExList();
+	ex = ex[index]
 	let id = ex.book.id;
 	let exid = ex.id;
 	let page = ex.page;
 	let subj = ex.book.subject;
 	let url = `https://odrabiamy.pl/${subj}/ksiazka-${id}/strona-${page}/zadanie-${exid}`
-	this.GetEX(url);
+	return this.GetEX(url);
 }
 const puppeter = require('puppeteer');
 browser = null;

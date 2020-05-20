@@ -66,6 +66,24 @@ server.get('/pages',function(req, res) {
         res.end()
     }
 })
+server.get('/ex',function(req, res) {
+    params = webserver.GetParams(req)
+    if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
+        res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
+         if(params.page&&params.book&&params.exid){
+            res.write(JSON.stringify(odrabiamyjs.GetExercise( odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page)),params.exid))
+        }else
+        if(params.page&&params.book){
+            res.write(JSON.stringify(odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page)))
+        }
+        
+        res.end()
+    }else{
+        res.writeHead(200)
+        res.write(fs.readFileSync('./Server/login.html'))
+        res.end()
+    }
+})
 
 
 server.get('/rdata',function(req, res) {
