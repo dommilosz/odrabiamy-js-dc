@@ -2,6 +2,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 module.exports.JSON_RESP = {};
 module.exports.Ksiazki = {};
 
+
 module.exports.REQ_GET = function REQ_GET(url) {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET", url, false); // false for synchronous request
@@ -44,3 +45,12 @@ module.exports.GetData = function (){
 }
 
 this.GetData();
+module.exports.getBookByID = function(klasa,id){
+	var matching = ''; 
+	this.Ksiazki[klasa].forEach(el=>{
+		if(el.id == parseInt( id)){
+			matching = el;
+		};
+	})
+	return matching
+}

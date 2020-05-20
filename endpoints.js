@@ -32,6 +32,9 @@ server.get('/ksiazki',function(req, res) {
     params = webserver.GetParams(req)
     if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
         res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
+        if(params.klasa&&params.book){
+            res.write(JSON.stringify(odrabiamyjs.getBookByID(params.klasa,params.book)))
+        }else
         if(params.klasa){
             res.write(JSON.stringify(odrabiamyjs.Ksiazki[params.klasa]))
         }else{
@@ -45,6 +48,7 @@ server.get('/ksiazki',function(req, res) {
         res.end()
     }
 })
+
 server.get('/rdata',function(req, res) {
     params = webserver.GetParams(req)
     if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
