@@ -54,3 +54,9 @@ module.exports.getBookByID = function(klasa,id){
 	})
 	return matching
 }
+module.exports.getBooksByClass = function(klasa){
+	return this.Ksiazki[klasa]
+}
+module.exports.getALLBooks = function(){
+	return this.Ksiazki;
+}

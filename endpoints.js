@@ -36,7 +36,7 @@ server.get('/ksiazki',function(req, res) {
             res.write(JSON.stringify(odrabiamyjs.getBookByID(params.klasa,params.book)))
         }else
         if(params.klasa){
-            res.write(JSON.stringify(odrabiamyjs.Ksiazki[params.klasa]))
+            res.write(JSON.stringify(odrabiamyjs.getBooksByClass(params.klasa)))
         }else{
             res.write(JSON.stringify(odrabiamyjs.Ksiazki))
         }
