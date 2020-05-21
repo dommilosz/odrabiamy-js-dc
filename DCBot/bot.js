@@ -35,17 +35,23 @@ bot.on('message', async function(msg) {
                 })
                 
             })
-            userdata[msg.author.id] = '!o';
+            userdata[msg.author.id] = przedmioty_arrsend;
             msg.channel.send(`!odrabiamy <@${msg.author.id}> \nWybierz Klase:  \`\`\`st\n${ przedmioty_arrsend.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
         }
         else if(cmd.toLowerCase() === 'choose'||cmd.toLowerCase() === 'c') {
             if(userdata[msg.author.id]&&userdata[msg.author.id]!='none'&&userdata[msg.author.id]!='')
             {
-            args = args.join(" ");
-            args = args.split(/[ ]+[|][ ]+/);
-            let min = Math.ceil(0);
-            let max = Math.floor(args.length)
-            msg.channel.send(`Wybrano \`${args[Math.floor(Math.random() * (max - min) + min)]}\``)
+                args = args.join(" ");
+                args = args.split(/[ ]+[|][ ]+/);
+                let min = Math.ceil(0);
+                let max = Math.floor(args.length)
+                let choosen = args[Math.floor(Math.random() * (max - min) + min)].trim();
+                if(userdata[msg.author.id].includes(choosen))
+                {
+                msg.channel.send(`Wybrano \`${choosen}\``)
+                }else{msg.channel.send(`ERROR 404. Co ty wpisales? \`${choosen}\``)}
+            }else{
+                msg.channel.send(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`)
             }
             //args[Math.floor(Math.random() * (min - max) + min)]
         }
