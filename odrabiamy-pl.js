@@ -30,7 +30,7 @@ module.exports.GetData = function (){
 	this.JSON_RESP.forEach(el=>{
 		
 		var donegrades = [];
-		var grades = el.grades_number.split(',');
+		var grades = el.grades;
 		var subj = el.subject;
 
 		grades.forEach(el2=>{
