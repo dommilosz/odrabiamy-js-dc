@@ -11,6 +11,6 @@ auth.password = "onpm";
 var StartArgs = process.argv.slice(2);
 console.log("StartArgs: ", StartArgs);
 api = require('./odrabiamy-pl.js')
-api.GetCookie();
+api.GetCookie(secrets.username,secrets.password);
 
 bot.Init();

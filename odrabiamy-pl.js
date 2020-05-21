@@ -141,7 +141,7 @@ module.exports.GetEX = async function odrabiamyGetExercise(href)
     
 
 }
-module.exports.GetCookie = async function() 
+module.exports.GetCookie = async function(username,password) 
 {
 	try{browser = await puppeter.launch({args: ['--no-sandbox'],devtools:true})}
     catch(ex){
@@ -163,6 +163,8 @@ module.exports.GetCookie = async function()
     }
 	let page = await browser.newPage();
 	await page.goto('https://odrabiamy.pl/?signIn=true&type=Login');
+	await page.type('.form-control[name=login]',username);
+	await page.type('.form-control[name=password]',password);
 	await page.waitForSelector(".username");
 	await page.waitFor(500);
 	cookies = await page.cookies()
