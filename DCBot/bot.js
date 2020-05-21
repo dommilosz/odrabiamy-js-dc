@@ -196,10 +196,25 @@ function BackChoosen(msg){
 }
 SendBotMsg = function(content,msg){
 	//dzielenie przez 2000 \\DONE
-	var splitcontent = content.toString().match(/[\s\S]{1,2000}/g) || [];
-	//i wysylanie na kanal (TODO) \\DONE
-	for(var item in splitcontent)
-	{
-		msg.channel.send(item);
-	}
+	var maxlength = 2000;
+	var splitcontent_br = content.split('\n');
+	var splitcontent = [];
+	var str = '';
+	splitcontent_br.forEach(element => {
+		if(str.length<2000){
+			if((str+element).length<=2000){
+				str +=element+'\n';
+			}else{
+				splitcontent.push(str);
+				str = '';
+				if((str+element).length<=2000){
+					str +=element+'\n';
+				}
+			}
+		}
+	});
+	splitcontent.push(str);
+	splitcontent.forEach(element => {
+		msg.channel.send(element);		
+	});
 }
