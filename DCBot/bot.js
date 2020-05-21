@@ -7,7 +7,9 @@ bot.on('ready', () => {
     console.log(`Logged in as ${bot.user.username}!`);
 });
 
-bot.login(json['token']);
+module.exports.Init = function(){
+    bot.login(json.token);
+}
 
 bot.on('message', async function(msg) {
     if(msg.content.startsWith('!')) {
