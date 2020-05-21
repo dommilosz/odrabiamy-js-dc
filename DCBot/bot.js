@@ -44,18 +44,18 @@ bot.on("message", async function (msg) {
 				});
 			});
 			AddChooseState(przedmioty_arrsend,'',msg)
-			msg.channel.send(
+			SendBotMsg(
 				`!odrabiamy <@${
 					msg.author.id
 				}> \nWybierz Klase:  \`\`\`st\n${przedmioty_arrsend.join(
 					"\n"
-				)} \`\`\`\n!c[hoose] <nazwa>`
+				)} \`\`\`\n!c[hoose] <nazwa>`,msg
 			);
 		} else if (
 			cmd.toLowerCase() === "choose" ||
 			cmd.toLowerCase() === "c"
 		) {
-			msg.channel.send(`<@${msg.author.id}>`);
+			SendBotMsg(`<@${msg.author.id}>`,msg);
 			if (
 				userdata[msg.author.id] &&
 				userdata[msg.author.id] != "none" &&
@@ -70,7 +70,7 @@ bot.on("message", async function (msg) {
 				].trim();
 				if (CheckChoosen(choosen,msg)) {
 					//sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
-					msg.channel.send(`Wybrano \`${choosen}\``);
+					SendBotMsg(`Wybrano \`${choosen}\``,msg);
 					if (userdata[msg.author.id][0] == 0) {
 						//sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
 						let subj = Object.keys(
@@ -84,10 +84,10 @@ bot.on("message", async function (msg) {
 							subj2[i] = "+ " + element;
 						});
 						AddChooseState(subj,choosen,msg)
-						msg.channel.send(
+						SendBotMsg(
 							`Wybierz Przedmiot:  \`\`\`diff\n${subj2.join(
 								"\n"
-							)} \`\`\`\n!c[hoose] <nazwa>`
+							)} \`\`\`\n!c[hoose] <nazwa>`,msg
 						);
 					} else if (userdata[msg.author.id][0] == 1) {
 						//sprawdz czy uzytkownik wybiera przedmiot
@@ -102,10 +102,10 @@ bot.on("message", async function (msg) {
 							indexes.push(i);
 						});
 						AddChooseState(indexes,choosen,msg)
-						msg.channel.send(
+						SendBotMsg(
 							`Wybierz Ksiazke:  \`\`\`diff\n${books_arr.join(
 								"\n"
-							)} \`\`\`\n!c[hoose] <nazwa> (use ID)`
+							)} \`\`\`\n!c[hoose] <nazwa> (use ID)`,msg
 						);
 					}
 				} else if (userdata[msg.author.id][0] == 2) {
@@ -116,10 +116,10 @@ bot.on("message", async function (msg) {
 					);
 					book = books[choosen];
 					AddChooseState(book.pages,choosen,msg)
-					msg.channel.send(
+					SendBotMsg(
 						`Wybierz Strone:  \`\`\`diff\n${book.pages.join(
 							" "
-						)} \`\`\`\n!c[hoose] <nazwa>`
+						)} \`\`\`\n!c[hoose] <nazwa>`,msg
 					);
 				} else if (userdata[msg.author.id][0] == 3) {
 					//sprawdz czy uzytkownik wybiera strone
@@ -136,30 +136,30 @@ bot.on("message", async function (msg) {
 						indexes.push(i);
 					});
 					AddChooseState(indexes,choosen,msg)
-					msg.channel.send(
+					SendBotMsg(
 						`Wybierz Strone:  \`\`\`diff\n${towritearr.join(
 							"\n"
-						)} \`\`\`\n!c[hoose] <nazwa>`
+						)} \`\`\`\n!c[hoose] <nazwa>`,msg
 					);
 				} else {
-					msg.channel.send(
-						`ERROR 404. Co ty wpisales? \`${choosen}\``
+					SendBotMsg(
+						`ERROR 404. Co ty wpisales? \`${choosen}\``,msg
 					);
 				}
 			} else {
-				msg.channel.send(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`);
+				SendBotMsg(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`,msg);
 			}
 			//args[Math.floor(Math.random() * (min - max) + min)]
 		}
 		else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b")
 		{
 			BackChoosen(msg)
-			msg.channel.send(`BACKED`);
+			SendBotMsg(`BACKED`,msg);
 		}
 		//else if() wsparcie dla innych komend
 		else {
-			msg.channel.send(
-				"Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`"
+			SendBotMsg(
+				"Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`",msg
 			);
 		}
 	}
