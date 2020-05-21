@@ -194,7 +194,7 @@ function BackChoosen(msg){
 	userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(0,lastid);
 	userdata[msg.author.id] = data;}
 }
-function SendBotMsg(content,msg){
+SendBotMsg = function(content,msg){
 	//dzielenie przez 2000 \\DONE
 	var splitcontent = content.toString().match(/[\s\S]{1,2000}/g) || [];
 	//i wysylanie na kanal (TODO) \\DONE
