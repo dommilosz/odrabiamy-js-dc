@@ -16,6 +16,7 @@ userdata = {};
 userdata_prev = {};
 
 bot.on("message", async function (msg) {
+	SendBotMsg(JSON.stringify(odrabiamy.getALLBooks), msg);
 	if (msg.content.startsWith("!")) {
 		if (msg.author.bot) return;
 		console.log(`DCBOT VALID CMD: ${msg}`);
@@ -194,7 +195,7 @@ function BackChoosen(msg){
 	userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(0,lastid);
 	userdata[msg.author.id] = data;}
 }
-SendBotMsg = function(content,msg){
+function SendBotMsg(content,msg){
 	//dzielenie przez 2000 \\DONE
 	var splitcontent = content.match(/[\s\S]{1,2000}/g) || [];
 	//i wysylanie na kanal (TODO) \\DONE
