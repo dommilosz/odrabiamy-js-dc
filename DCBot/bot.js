@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const bot = new Discord.Client();
 const json = require("./klucz.json");
 const odrabiamy = require("../odrabiamy-pl.js");
+const { error } = require("jquery");
 
 bot.on("ready", () => {
 	console.log(`Logged in as ${bot.user.username}!`);
@@ -154,6 +155,10 @@ bot.on("message", async function (msg) {
 				msg.channel.send(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`);
 			}
 			//args[Math.floor(Math.random() * (min - max) + min)]
+		}
+		else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b")
+		{
+			
 		}
 		//else if() wsparcie dla innych komend
 		else {
