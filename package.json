@@ -8,6 +8,10 @@
   },
   "author": "",
   "license": "GPL-3.0",
+  "scripts": {
+    "start": "node main.js",
+    "debug": "node main.js --inspect=5858"
+  },
   "bugs": {},
   "dependencies": {
     "discord.js": "^12.2.0",
