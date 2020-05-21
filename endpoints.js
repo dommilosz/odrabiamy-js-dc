@@ -71,13 +71,20 @@ server.get('/ex',function(req, res) {
     if(params.hash&&params.username&&params.username.trim()!=""&&auth.CheckHash( params.hash,params.username)){
         res.writeHead(200,{"Content-Type": "text/json; charset=utf-8"})
          if(params.page&&params.book&&params.exid){
-            res.write(JSON.stringify(odrabiamyjs.GetExercise( odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page)),params.exid))
+             let book = odrabiamyjs.getBookByID(params.klasa,params.book)
+             let exs = odrabiamyjs.getExList(book,params.page);
+             let ex = odrabiamyjs.GetExercise(exs,params.exid).then(r=>{
+                res.write(JSON.stringify(r))
+                res.end()
+             });
+            
         }else
         if(params.page&&params.book){
             res.write(JSON.stringify(odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page)))
+            res.end()
         }
         
-        res.end()
+        
     }else{
         res.writeHead(200)
         res.write(fs.readFileSync('./Server/login.html'))

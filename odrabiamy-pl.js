@@ -79,7 +79,7 @@ module.exports.getPagesOfBook= function(book){
 	return book.pages
 }
 module.exports.getExList= function(book,page){
-	let resp = this.REQ_GET(`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`)
+	let resp = JSON.parse(this.REQ_GET(`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`))
 	return resp;
 }
 module.exports.GetExercise= function(ex,index){ //ex from getExList();
