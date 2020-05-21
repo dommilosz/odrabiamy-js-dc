@@ -12,6 +12,7 @@ module.exports.Init = function(){
 }
 
 userdata ={};
+userdata_prev ={};
 
 bot.on('message', async function(msg) {
     if(msg.content.startsWith('!')) {
@@ -35,10 +36,11 @@ bot.on('message', async function(msg) {
                 })
                 
             })
-            userdata[msg.author.id] = przedmioty_arrsend;
+            userdata[msg.author.id] = [1,przedmioty_arrsend];
             msg.channel.send(`!odrabiamy <@${msg.author.id}> \nWybierz Klase:  \`\`\`st\n${ przedmioty_arrsend.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
         }
         else if(cmd.toLowerCase() === 'choose'||cmd.toLowerCase() === 'c') {
+            msg.channel.send(`<@${msg.author.id}>`)
             if(userdata[msg.author.id]&&userdata[msg.author.id]!='none'&&userdata[msg.author.id]!='')
             {
                 args = args.join(" ");
@@ -46,10 +48,40 @@ bot.on('message', async function(msg) {
                 let min = Math.ceil(0);
                 let max = Math.floor(args.length)
                 let choosen = args[Math.floor(Math.random() * (max - min) + min)].trim();
-                if(userdata[msg.author.id].includes(choosen))
+                if(userdata[msg.author.id][1].includes(choosen))
                 {
-                msg.channel.send(`Wybrano \`${choosen}\``)
-                }else{msg.channel.send(`ERROR 404. Co ty wpisales? \`${choosen}\``)}
+                    msg.channel.send(`Wybrano \`${choosen}\``)
+                    if(userdata[msg.author.id][0]==1){
+                    let subj = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
+                    let subj2 = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
+                    subj.forEach((element,i) => {
+                        subj[i] = (element);
+                        subj2[i] = '+ '+(element);
+                    });
+                    userdata[msg.author.id] = [2,subj];
+                    userdata_prev[msg.author.id] = [];
+                    userdata_prev[msg.author.id].push(choosen);
+                    msg.channel.send(`Wybierz Przedmiot:  \`\`\`diff\n${ subj2.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
+                }else if(userdata[msg.author.id][0]==2){
+                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],choosen)
+                    books_arr = [];
+                    indexes = [];
+                    books.forEach((el,i)=>{
+                        books_arr.push(`+ ${i} : `+el.friendly_name)
+                        indexes.push(i);
+                    })
+                    userdata_prev[msg.author.id].push(choosen);
+                    userdata[msg.author.id] = [3,indexes];
+                    msg.channel.send(`Wybierz Ksiazke:  \`\`\`diff\n${ books_arr.join('\n')} \`\`\`\n!c[hoose] <nazwa> (use ID)`);
+                    }
+                }else if(userdata[msg.author.id][0]==3){
+                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
+                    book = books[choosen];
+                    userdata_prev[msg.author.id].push(choosen);
+                    msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ book.pages.join(' ')} \`\`\`\n!c[hoose] <nazwa>`);
+                    }
+                
+                else{msg.channel.send(`ERROR 404. Co ty wpisales? \`${choosen}\``)}
             }else{
                 msg.channel.send(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`)
             }
