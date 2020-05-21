@@ -43,7 +43,7 @@ bot.on("message", async function (msg) {
 					przedmioty_arrsend.push(`${el2} ${el}`);
 				});
 			});
-			userdata[msg.author.id] = [1, przedmioty_arrsend];
+			AddChooseState(przedmioty_arrsend,'',msg)
 			msg.channel.send(
 				`!odrabiamy <@${
 					msg.author.id
@@ -68,10 +68,10 @@ bot.on("message", async function (msg) {
 				let choosen = args[
 					Math.floor(Math.random() * (max - min) + min)
 				].trim();
-				if (userdata[msg.author.id][1].includes(choosen)) {
+				if (CheckChoosen(choosen,msg)) {
 					//sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
 					msg.channel.send(`Wybrano \`${choosen}\``);
-					if (userdata[msg.author.id][0] == 1) {
+					if (userdata[msg.author.id][0] == 0) {
 						//sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
 						let subj = Object.keys(
 							odrabiamy.Ksiazki_Subjects[choosen]
@@ -83,18 +83,16 @@ bot.on("message", async function (msg) {
 							subj[i] = element;
 							subj2[i] = "+ " + element;
 						});
-						userdata[msg.author.id] = [2, subj];
-						userdata_prev[msg.author.id] = [];
-						userdata_prev[msg.author.id].push(choosen);
+						AddChooseState(subj,choosen,msg)
 						msg.channel.send(
 							`Wybierz Przedmiot:  \`\`\`diff\n${subj2.join(
 								"\n"
 							)} \`\`\`\n!c[hoose] <nazwa>`
 						);
-					} else if (userdata[msg.author.id][0] == 2) {
+					} else if (userdata[msg.author.id][0] == 1) {
 						//sprawdz czy uzytkownik wybiera przedmiot
 						books = odrabiamy.getBooksBySubject(
-							userdata_prev[msg.author.id][0],
+							userdata_prev[msg.author.id][1],
 							choosen
 						);
 						books_arr = [];
@@ -103,35 +101,33 @@ bot.on("message", async function (msg) {
 							books_arr.push(`+ ${i} : ` + el.friendly_name);
 							indexes.push(i);
 						});
-						userdata_prev[msg.author.id].push(choosen);
-						userdata[msg.author.id] = [3, indexes];
+						AddChooseState(indexes,choosen,msg)
 						msg.channel.send(
 							`Wybierz Ksiazke:  \`\`\`diff\n${books_arr.join(
 								"\n"
 							)} \`\`\`\n!c[hoose] <nazwa> (use ID)`
 						);
 					}
-				} else if (userdata[msg.author.id][0] == 3) {
+				} else if (userdata[msg.author.id][0] == 2) {
 					//sprawdz czy uzytkownik wybiera ksiazke
 					books = odrabiamy.getBooksBySubject(
-						userdata_prev[msg.author.id][0],
-						userdata_prev[msg.author.id][1]
+						userdata_prev[msg.author.id][1],
+						userdata_prev[msg.author.id][2]
 					);
 					book = books[choosen];
-					userdata[msg.author.id] = [4, book.pages];
-					userdata_prev[msg.author.id].push(choosen);
+					AddChooseState(book.pages,choosen,msg)
 					msg.channel.send(
 						`Wybierz Strone:  \`\`\`diff\n${book.pages.join(
 							" "
 						)} \`\`\`\n!c[hoose] <nazwa>`
 					);
-				} else if (userdata[msg.author.id][0] == 4) {
+				} else if (userdata[msg.author.id][0] == 3) {
 					//sprawdz czy uzytkownik wybiera strone
 					books = odrabiamy.getBooksBySubject(
-						userdata_prev[msg.author.id][0],
-						userdata_prev[msg.author.id][1]
+						userdata_prev[msg.author.id][1],
+						userdata_prev[msg.author.id][2]
 					);
-					book = books[userdata_prev[msg.author.id][2]];
+					book = books[userdata_prev[msg.author.id][3]];
 					exs = odrabiamy.getExList(book, choosen);
 					towritearr = [];
 					indexes = [];
@@ -139,8 +135,7 @@ bot.on("message", async function (msg) {
 						towritearr.push(`+ ${i} : ` + el.number);
 						indexes.push(i);
 					});
-					userdata[msg.author.id] = [5, indexes];
-					userdata_prev[msg.author.id].push(choosen);
+					AddChooseState(indexes,choosen,msg)
 					msg.channel.send(
 						`Wybierz Strone:  \`\`\`diff\n${towritearr.join(
 							"\n"
@@ -158,7 +153,8 @@ bot.on("message", async function (msg) {
 		}
 		else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b")
 		{
-			
+			BackChoosen(msg)
+			msg.channel.send(`BACKED`);
 		}
 		//else if() wsparcie dla innych komend
 		else {
@@ -168,3 +164,37 @@ bot.on("message", async function (msg) {
 		}
 	}
 });
+
+function AddChooseState(valid_options,choosen,msg){
+	let data = userdata[msg.author.id];
+	if(!userdata_prev[msg.author.id])userdata_prev[msg.author.id]=[];
+	if(!data) data = [-1,[]];
+	lastid = data[0];
+	data[0] = data[0]+1;
+	data[1].push(valid_options);
+	userdata_prev[msg.author.id].push(choosen);
+	userdata[msg.author.id] = data;
+}
+function CheckChoosen(choosen,msg){
+	let data = userdata[msg.author.id];
+	if(!data) data = [-1,[]];
+	lastid = data[0];
+	if(data[1][lastid].includes(choosen)){
+		return true;
+	}
+	return false;
+}
+function BackChoosen(msg){
+	let data = userdata[msg.author.id];
+	if(!data) data = [0,[]];
+	lastid = data[0];
+	if(lastid>=0){
+	data[0] = data[0]-1;
+	data[1] = data[1].slice(0,lastid);
+	userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(0,lastid);
+	userdata[msg.author.id] = data;}
+}
+SendBotMsg = function(content){
+	//dzielenie przez 2000
+	//i wysylanie na kanal (TODO)
+}
