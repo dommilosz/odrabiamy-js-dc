@@ -77,9 +77,23 @@ bot.on('message', async function(msg) {
                 }else if(userdata[msg.author.id][0]==3){
                     books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
                     book = books[choosen];
+                    userdata[msg.author.id] = [4,book.pages];
                     userdata_prev[msg.author.id].push(choosen);
                     msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ book.pages.join(' ')} \`\`\`\n!c[hoose] <nazwa>`);
-                    }
+                }else if(userdata[msg.author.id][0]==4){
+                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
+                    book = books[userdata_prev[msg.author.id][2]];
+                    exs = odrabiamy.getExList(book,choosen);
+                    towritearr =[];
+                    indexes = [];
+                    exs.forEach((el,i)=>{
+                        towritearr.push(`+ ${i} : `+el.number);
+                        indexes.push(i);
+                    })
+                    userdata[msg.author.id] = [5,indexes];
+                    userdata_prev[msg.author.id].push(choosen);
+                    msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ towritearr.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
+                }
                 
                 else{msg.channel.send(`ERROR 404. Co ty wpisales? \`${choosen}\``)}
             }else{
