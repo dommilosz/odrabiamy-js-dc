@@ -48,51 +48,51 @@ bot.on('message', async function(msg) {
                 let min = Math.ceil(0);
                 let max = Math.floor(args.length)
                 let choosen = args[Math.floor(Math.random() * (max - min) + min)].trim();
-                if(userdata[msg.author.id][1].includes(choosen))
+                if(userdata[msg.author.id][1].includes(choosen))  //sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
                 {
                     msg.channel.send(`Wybrano \`${choosen}\``)
-                    if(userdata[msg.author.id][0]==1){
-                    let subj = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
-                    let subj2 = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
-                    subj.forEach((element,i) => {
-                        subj[i] = (element);
-                        subj2[i] = '+ '+(element);
-                    });
-                    userdata[msg.author.id] = [2,subj];
-                    userdata_prev[msg.author.id] = [];
-                    userdata_prev[msg.author.id].push(choosen);
-                    msg.channel.send(`Wybierz Przedmiot:  \`\`\`diff\n${ subj2.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
-                }else if(userdata[msg.author.id][0]==2){
-                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],choosen)
-                    books_arr = [];
-                    indexes = [];
-                    books.forEach((el,i)=>{
-                        books_arr.push(`+ ${i} : `+el.friendly_name)
-                        indexes.push(i);
-                    })
-                    userdata_prev[msg.author.id].push(choosen);
-                    userdata[msg.author.id] = [3,indexes];
-                    msg.channel.send(`Wybierz Ksiazke:  \`\`\`diff\n${ books_arr.join('\n')} \`\`\`\n!c[hoose] <nazwa> (use ID)`);
-                    }
-                }else if(userdata[msg.author.id][0]==3){
-                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
-                    book = books[choosen];
-                    userdata[msg.author.id] = [4,book.pages];
-                    userdata_prev[msg.author.id].push(choosen);
-                    msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ book.pages.join(' ')} \`\`\`\n!c[hoose] <nazwa>`);
-                }else if(userdata[msg.author.id][0]==4){
-                    books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
-                    book = books[userdata_prev[msg.author.id][2]];
-                    exs = odrabiamy.getExList(book,choosen);
-                    towritearr =[];
-                    indexes = [];
-                    exs.forEach((el,i)=>{
-                        towritearr.push(`+ ${i} : `+el.number);
-                        indexes.push(i);
-                    })
-                    userdata[msg.author.id] = [5,indexes];
-                    userdata_prev[msg.author.id].push(choosen);
-                    msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ towritearr.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
+                    if(userdata[msg.author.id][0]==1){  //sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
+                        let subj = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
+                        let subj2 = Object.keys(odrabiamy.Ksiazki_Subjects[choosen])
+                        subj.forEach((element,i) => {
+                            subj[i] = (element);
+                            subj2[i] = '+ '+(element);
+                        });
+                        userdata[msg.author.id] = [2,subj];
+                        userdata_prev[msg.author.id] = [];
+                        userdata_prev[msg.author.id].push(choosen);
+                        msg.channel.send(`Wybierz Przedmiot:  \`\`\`diff\n${ subj2.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
+                    }else if(userdata[msg.author.id][0]==2){ //sprawdz czy uzytkownik wybiera przedmiot
+                        books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],choosen)
+                        books_arr = [];
+                        indexes = [];
+                        books.forEach((el,i)=>{
+                            books_arr.push(`+ ${i} : `+el.friendly_name)
+                            indexes.push(i);
+                        })
+                        userdata_prev[msg.author.id].push(choosen);
+                        userdata[msg.author.id] = [3,indexes];
+                        msg.channel.send(`Wybierz Ksiazke:  \`\`\`diff\n${ books_arr.join('\n')} \`\`\`\n!c[hoose] <nazwa> (use ID)`);
+                        }
+                    }else if(userdata[msg.author.id][0]==3){ //sprawdz czy uzytkownik wybiera ksiazke
+                        books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
+                        book = books[choosen];
+                        userdata[msg.author.id] = [4,book.pages];
+                        userdata_prev[msg.author.id].push(choosen);
+                        msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ book.pages.join(' ')} \`\`\`\n!c[hoose] <nazwa>`);
+                    }else if(userdata[msg.author.id][0]==4){//sprawdz czy uzytkownik wybiera strone
+                        books = odrabiamy.getBooksBySubject(userdata_prev[msg.author.id][0],userdata_prev[msg.author.id][1])
+                        book = books[userdata_prev[msg.author.id][2]];
+                        exs = odrabiamy.getExList(book,choosen);
+                        towritearr =[];
+                        indexes = [];
+                        exs.forEach((el,i)=>{
+                            towritearr.push(`+ ${i} : `+el.number);
+                            indexes.push(i);
+                        })
+                        userdata[msg.author.id] = [5,indexes];
+                        userdata_prev[msg.author.id].push(choosen);
+                        msg.channel.send(`Wybierz Strone:  \`\`\`diff\n${ towritearr.join('\n')} \`\`\`\n!c[hoose] <nazwa>`);
                 }
                 
                 else{msg.channel.send(`ERROR 404. Co ty wpisales? \`${choosen}\``)}
