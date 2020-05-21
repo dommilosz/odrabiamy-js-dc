@@ -195,6 +195,11 @@ function BackChoosen(msg){
 	userdata[msg.author.id] = data;}
 }
 SendBotMsg = function(content,msg){
-	//dzielenie przez 2000
-	//i wysylanie na kanal (TODO)
+	//dzielenie przez 2000 \\DONE
+	var splitcontent = content.match(/[\s\S]{1,2000}/g) || [];
+	//i wysylanie na kanal (TODO) \\DONE
+	for(var item in splitcontent)
+	{
+		msg.channel.send(item);
+	}
 }
