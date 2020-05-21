@@ -166,7 +166,8 @@ module.exports.GetCookie = async function(username,password)
 	await page.type('.form-control[name=login]',username);
 	await page.type('.form-control[name=password]',password);
 	await page.waitForSelector(".username");
-	await page.waitFor(500);
+	await page.waitFor(2500);
+	await page.click('.btn-login')
 	cookies = await page.cookies()
 	page.close()
 }
