@@ -194,7 +194,7 @@ function BackChoosen(msg){
 	userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(0,lastid);
 	userdata[msg.author.id] = data;}
 }
-SendBotMsg = function(content){
+SendBotMsg = function(content,msg){
 	//dzielenie przez 2000
 	//i wysylanie na kanal (TODO)
 }
