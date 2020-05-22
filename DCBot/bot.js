@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const bot = new Discord.Client();
 const json = require("./klucz.json");
 const odrabiamy = require("../odrabiamy-pl.js");
-const { error } = require("jquery");
+const {error} = require("jquery");
 
 bot.on("ready", () => {
 	console.log(`Logged in as ${bot.user.username}!`);
@@ -43,19 +43,22 @@ bot.on("message", async function (msg) {
 					przedmioty_arrsend.push(`${el2} ${el}`);
 				});
 			});
-			AddChooseState(przedmioty_arrsend,'',msg)
-			SendBotMsg(
+			AddChooseState(przedmioty_arrsend, "", msg);
+			SendBotMsgINCodeBlock(
 				`!odrabiamy <@${
 					msg.author.id
 				}> \nWybierz Klase:  \`\`\`st\n${przedmioty_arrsend.join(
 					"\n"
-				)} \`\`\`\n!c[hoose] <nazwa>`,msg
+				)} \`\`\`\n!c[hoose] <nazwa>`,
+				msg,
+				"```st\n",
+				"```\n"
 			);
 		} else if (
 			cmd.toLowerCase() === "choose" ||
 			cmd.toLowerCase() === "c"
 		) {
-			SendBotMsg(`<@${msg.author.id}>`,msg);
+			SendBotMsg(`<@${msg.author.id}>`, msg);
 			if (
 				userdata[msg.author.id] &&
 				userdata[msg.author.id] != "none" &&
@@ -68,9 +71,9 @@ bot.on("message", async function (msg) {
 				let choosen = args[
 					Math.floor(Math.random() * (max - min) + min)
 				].trim();
-				if (CheckChoosen(choosen,msg)) {
+				if (CheckChoosen(choosen, msg)) {
 					//sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
-					SendBotMsg(`Wybrano \`${choosen}\``,msg);
+					SendBotMsg(`Wybrano \`${choosen}\``, msg);
 					if (userdata[msg.author.id][0] == 0) {
 						//sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
 						let subj = Object.keys(
@@ -83,11 +86,14 @@ bot.on("message", async function (msg) {
 							subj[i] = element;
 							subj2[i] = "+ " + element;
 						});
-						AddChooseState(subj,choosen,msg)
-						SendBotMsg(
+						AddChooseState(subj, choosen, msg);
+						SendBotMsgINCodeBlock(
 							`Wybierz Przedmiot:  \`\`\`diff\n${subj2.join(
 								"\n"
-							)} \`\`\`\n!c[hoose] <nazwa>`,msg
+							)} \`\`\`\n!c[hoose] <nazwa>`,
+							msg,
+							"```diff\n",
+							"```\n"
 						);
 					} else if (userdata[msg.author.id][0] == 1) {
 						//sprawdz czy uzytkownik wybiera przedmiot
@@ -101,11 +107,14 @@ bot.on("message", async function (msg) {
 							books_arr.push(`+ ${i} : ` + el.friendly_name);
 							indexes.push(i);
 						});
-						AddChooseState(indexes,choosen,msg)
-						SendBotMsg(
+						AddChooseState(indexes, choosen, msg);
+						SendBotMsgINCodeBlock(
 							`Wybierz Ksiazke:  \`\`\`diff\n${books_arr.join(
 								"\n"
-							)} \`\`\`\n!c[hoose] <nazwa> (use ID)`,msg
+							)} \`\`\`\n!c[hoose] <nazwa> (use ID)`,
+							msg,
+							"```diff\n",
+							"```\n"
 						);
 					}
 				} else if (userdata[msg.author.id][0] == 2) {
@@ -115,11 +124,14 @@ bot.on("message", async function (msg) {
 						userdata_prev[msg.author.id][2]
 					);
 					book = books[choosen];
-					AddChooseState(book.pages,choosen,msg)
-					SendBotMsg(
+					AddChooseState(book.pages, choosen, msg);
+					SendBotMsgINCodeBlock(
 						`Wybierz Strone:  \`\`\`diff\n${book.pages.join(
 							" "
-						)} \`\`\`\n!c[hoose] <nazwa>`,msg
+						)} \`\`\`\n!c[hoose] <nazwa>`,
+						msg,
+						"```diff\n",
+						"```\n"
 					);
 				} else if (userdata[msg.author.id][0] == 3) {
 					//sprawdz czy uzytkownik wybiera strone
@@ -135,86 +147,112 @@ bot.on("message", async function (msg) {
 						towritearr.push(`+ ${i} : ` + el.number);
 						indexes.push(i);
 					});
-					AddChooseState(indexes,choosen,msg)
-					SendBotMsg(
-						`Wybierz Strone:  \`\`\`diff\n${towritearr.join(
+					AddChooseState(indexes, choosen, msg);
+					SendBotMsgINCodeBlock(
+						`Wybierz Zadanie:  \`\`\`diff\n${towritearr.join(
 							"\n"
-						)} \`\`\`\n!c[hoose] <nazwa>`,msg
+						)} \`\`\`\n!c[hoose] <nazwa>`,
+						msg,
+						"```diff\n",
+						"```\n"
 					);
+				}else if (userdata[msg.author.id][0] == 4) {
+					//wyslij zadanie
+					
 				} else {
 					SendBotMsg(
-						`ERROR 404. Co ty wpisales? \`${choosen}\``,msg
+						`ERROR 404. Co ty wpisales? \`${choosen}\``,
+						msg
 					);
 				}
 			} else {
-				SendBotMsg(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`,msg);
+				SendBotMsg(`EJ EJ EJ. Czy ty wpisales \`!o[drabiamy]\`?`, msg);
 			}
 			//args[Math.floor(Math.random() * (min - max) + min)]
-		}
-		else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b")
-		{
-			BackChoosen(msg)
-			SendBotMsg(`BACKED`,msg);
+		} else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b") {
+			BackChoosen(msg);
+			SendBotMsg(`BACKED`, msg);
 		}
 		//else if() wsparcie dla innych komend
 		else {
 			SendBotMsg(
-				"Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`",msg
+				"Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`",
+				msg
 			);
 		}
 	}
 });
 
-function AddChooseState(valid_options,choosen,msg){
+function AddChooseState(valid_options, choosen, msg) {
 	let data = userdata[msg.author.id];
-	if(!userdata_prev[msg.author.id])userdata_prev[msg.author.id]=[];
-	if(!data) data = [-1,[]];
+	if (!userdata_prev[msg.author.id]) userdata_prev[msg.author.id] = [];
+	if (!data) data = [-1, []];
 	lastid = data[0];
-	data[0] = data[0]+1;
+	data[0] = data[0] + 1;
 	data[1].push(valid_options);
 	userdata_prev[msg.author.id].push(choosen);
 	userdata[msg.author.id] = data;
 }
-function CheckChoosen(choosen,msg){
+function CheckChoosen(choosen, msg) {
 	let data = userdata[msg.author.id];
-	if(!data) data = [-1,[]];
+	if (!data) data = [-1, []];
 	lastid = data[0];
-	if(data[1][lastid].includes(choosen)){
+	if (data[1][lastid].includes(choosen)) {
 		return true;
 	}
 	return false;
 }
-function BackChoosen(msg){
+function BackChoosen(msg) {
 	let data = userdata[msg.author.id];
-	if(!data) data = [0,[]];
+	if (!data) data = [0, []];
 	lastid = data[0];
-	if(lastid>=0){
-	data[0] = data[0]-1;
-	data[1] = data[1].slice(0,lastid);
-	userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(0,lastid);
-	userdata[msg.author.id] = data;}
+	if (lastid >= 0) {
+		data[0] = data[0] - 1;
+		data[1] = data[1].slice(0, lastid);
+		userdata_prev[msg.author.id] = userdata_prev[msg.author.id].slice(
+			0,
+			lastid
+		);
+		userdata[msg.author.id] = data;
+	}
 }
-SendBotMsg = function(content,msg){
-	//dzielenie przez 2000 \\DONE
-	var maxlength = 2000;
-	var splitcontent_br = content.split('\n');
-	var splitcontent = [];
-	var str = '';
-	splitcontent_br.forEach(element => {
-		if(str.length<2000){
-			if((str+element).length<=2000){
-				str +=element+'\n';
-			}else{
-				splitcontent.push(str);
-				str = '';
-				if((str+element).length<=2000){
-					str +=element+'\n';
+SendBotMsg = function (content, msg) {
+	splitcontent = SplitContent(content);
+	splitcontent.forEach((element) => {
+		msg.channel.send(element);
+	});
+};
+SendBotMsgINCodeBlock = function (content, msg, before, after) {
+	splitcontent = SplitContent(content);
+	splitcontent.forEach((element, i) => {
+		if (splitcontent.length > 1) {
+			if (i == 0) msg.channel.send(element + after);
+			else if (i == splitcontent.length - 1)
+				msg.channel.send(before + element);
+			else msg.channel.send(before + element + after);
+		} else msg.channel.send(element);
+	});
+};
+
+SplitContent = function(content){
+		//dzielenie przez 2000 \\DONE
+		var maxlength = 1990;
+		var splitcontent_br = content.split("\n");
+		var splitcontent = [];
+		var str = "";
+		splitcontent_br.forEach((element) => {
+			if (str.length < maxlength) {
+				if ((str + element).length <= maxlength) {
+					str += element + "\n";
+				} else {
+					splitcontent.push(str);
+					str = "";
+					if ((str + element).length <= maxlength) {
+						str += element + "\n";
+					}
 				}
 			}
-		}
-	});
-	splitcontent.push(str);
-	splitcontent.forEach(element => {
-		msg.channel.send(element);		
-	});
+		});
+		splitcontent.push(str);
+		return splitcontent;
 }
