@@ -96,7 +96,7 @@ browser = null;
 cookies = '';
 module.exports.GetEX = async function odrabiamyGetExercise(href) 
 {
-	
+	if(browser==null)await launchbrowser(false);
 	let page = await browser.newPage();
 	await page.setCookie(...cookies)
     await page.goto(href);
@@ -143,11 +143,26 @@ module.exports.GetEX = async function odrabiamyGetExercise(href)
 }
 module.exports.GetCookie = async function(username,password) 
 {
-	try{browser = await puppeter.launch({args: ['--no-sandbox'],devtools:true})}
+	await launchbrowser(true);
+	let page = await browser.newPage();
+	await page.goto('https://odrabiamy.pl/?signIn=true&type=Login');
+	await page.type('.form-control[name=login]',username);
+	await page.type('.form-control[name=password]',password);
+	await page.waitForSelector(".username");
+	await page.waitFor(500);
+	cookies = await page.cookies()
+	page.close()
+	browser.close();
+	browser = null;
+}
+
+launchbrowser = async function(devtools){
+
+	try{browser = await puppeter.launch({args: ['--no-sandbox'],devtools:devtools})}
     catch(ex){
         try{
 			console.log(ex)
-        browser = await puppeter.launch({ executablePath: 'chromium-browser' })}catch{
+        browser = await puppeter.launch({ executablePath: 'chromium-browser' ,devtools:devtools})}catch{
             browser = await puppeter.launch({
                 'args': [
                     '--disable-web-security',
@@ -157,17 +172,9 @@ module.exports.GetCookie = async function(username,password)
                     '--no-sandbox'
                 ],
                 headless: true,
-                executablePath: '/usr/bin/chromium-browser',
+				executablePath: '/usr/bin/chromium-browser',
+				devtools:devtools
             });
         }
     }
-	let page = await browser.newPage();
-	await page.goto('https://odrabiamy.pl/?signIn=true&type=Login');
-	await page.type('.form-control[name=login]',username);
-	await page.type('.form-control[name=password]',password);
-	await page.waitForSelector(".username");
-	await page.waitFor(2500);
-	await page.click('.btn-login')
-	cookies = await page.cookies()
-	page.close()
 }

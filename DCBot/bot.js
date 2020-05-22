@@ -58,7 +58,7 @@ bot.on("message", async function (msg) {
 			cmd.toLowerCase() === "choose" ||
 			cmd.toLowerCase() === "c"
 		) {
-			SendBotMsg(`<@${msg.author.id}>`, msg);
+			
 			if (
 				userdata[msg.author.id] &&
 				userdata[msg.author.id] != "none" &&
@@ -73,7 +73,7 @@ bot.on("message", async function (msg) {
 				].trim();
 				if (CheckChoosen(choosen, msg)) {
 					//sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
-					SendBotMsg(`Wybrano \`${choosen}\``, msg);
+					
 					if (userdata[msg.author.id][0] == 0) {
 						//sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
 						let subj = Object.keys(
@@ -87,6 +87,8 @@ bot.on("message", async function (msg) {
 							subj2[i] = "+ " + element;
 						});
 						AddChooseState(subj, choosen, msg);
+						SendBotMsg(`<@${msg.author.id}>`, msg);
+						SendBotMsg(`Wybrano \`${choosen}\``, msg);
 						SendBotMsgINCodeBlock(
 							`Wybierz Przedmiot:  \`\`\`diff\n${subj2.join(
 								"\n"
@@ -108,6 +110,8 @@ bot.on("message", async function (msg) {
 							indexes.push(i);
 						});
 						AddChooseState(indexes, choosen, msg);
+						SendBotMsg(`<@${msg.author.id}>`, msg);
+						SendBotMsg(`Wybrano \`${choosen}\``, msg);
 						SendBotMsgINCodeBlock(
 							`Wybierz Ksiazke:  \`\`\`diff\n${books_arr.join(
 								"\n"
@@ -125,6 +129,8 @@ bot.on("message", async function (msg) {
 					);
 					book = books[choosen];
 					AddChooseState(book.pages, choosen, msg);
+					SendBotMsg(`<@${msg.author.id}>`, msg);
+					SendBotMsg(`Wybrano \`${choosen}\``, msg);
 					SendBotMsgINCodeBlock(
 						`Wybierz Strone:  \`\`\`diff\n${book.pages.join(
 							" "
@@ -148,6 +154,8 @@ bot.on("message", async function (msg) {
 						indexes.push(i);
 					});
 					AddChooseState(indexes, choosen, msg);
+					SendBotMsg(`<@${msg.author.id}>`, msg);
+					SendBotMsg(`Wybrano \`${choosen}\``, msg);
 					SendBotMsgINCodeBlock(
 						`Wybierz Zadanie:  \`\`\`diff\n${towritearr.join(
 							"\n"
@@ -158,6 +166,23 @@ bot.on("message", async function (msg) {
 					);
 				}else if (userdata[msg.author.id][0] == 4) {
 					//wyslij zadanie
+					books = odrabiamy.getBooksBySubject(
+						userdata_prev[msg.author.id][1],
+						userdata_prev[msg.author.id][2]
+					);
+					book = books[userdata_prev[msg.author.id][3]];
+					exs = odrabiamy.getExList(book, userdata_prev[msg.author.id][4]);
+					ex = exs[choosen];
+					SendBotMsg(`<@${msg.author.id}>`, msg);
+					SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
+					odrabiamy.GetExercise(exs,choosen).then(base64=>{
+						
+						require("fs").writeFileSync("tmp.png", base64, 'base64');3
+						SendBotMsg(`<@${msg.author.id}>`, msg);
+						msg.channel.send(`ZADANIE:`, {
+							files: ["./tmp.png"] 
+						});
+					});
 					
 				} else {
 					SendBotMsg(
