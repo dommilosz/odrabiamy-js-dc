@@ -43,6 +43,7 @@ bot.on("message", async function (msg) {
 					przedmioty_arrsend.push(`${el2} ${el}`);
 				});
 			});
+			userdata[msg.author.id] = null;
 			AddChooseState(przedmioty_arrsend, "", msg);
 			SendBotMsgINCodeBlock(
 				`!odrabiamy <@${
@@ -177,10 +178,10 @@ bot.on("message", async function (msg) {
 					SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
 					odrabiamy.GetExercise(exs,choosen).then(base64=>{
 						
-						require("fs").writeFileSync("tmp.png", base64, 'base64');3
+						require("fs").writeFileSync("tmp.html",base64);
 						SendBotMsg(`<@${msg.author.id}>`, msg);
 						msg.channel.send(`ZADANIE:`, {
-							files: ["./tmp.png"] 
+							files: ["./tmp.html"] 
 						});
 					});
 					

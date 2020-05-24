@@ -108,38 +108,10 @@ module.exports.GetEX = async function odrabiamyGetExercise(href)
         await page.waitFor(500);
 
 		const sol = await page.evaluate(() => {
-			let elements = document.getElementsByClassName('exercise-solution')
+			let elements = document.getElementsByClassName('exercise-solution')[0].innerHTML;
 			return elements;
 		});
-    	const rect = await page.evaluate(() => {
-        let elements = document.getElementsByClassName('exercise-solution')
-        let element = null
-        if(elements.length > 0)
-            element = elements[0]
-        else
-            return null
-        const {x, y, width, height} = element.getBoundingClientRect();
-        return {left: x, top: y, width, height, id: element.id};
-    });
-
-    if(rect)
-    {
-        image = await page.screenshot({
-            clip: {
-                x: rect.left - 0,
-                y: rect.top - 0,
-                width: rect.width + 0 * 2,
-                height: rect.height + 0 * 2
-            }
-        });
-        
-        page.close()
-        return Buffer.from(image).toString('base64');
-    }
-    
-            
-    
-
+    	return sol;
 }
 module.exports.GetCookie = async function(username,password) 
 {
