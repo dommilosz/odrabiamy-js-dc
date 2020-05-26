@@ -13,7 +13,9 @@ module.exports.Init = function () {
 };
 
 userdata = {};
+favdata = {};
 userdata_prev = {};
+messages = {};
 
 bot.on("message", async function (msg) {
 	if (msg.content.startsWith("!")) {
@@ -43,7 +45,7 @@ bot.on("message", async function (msg) {
 					przedmioty_arrsend.push(`${el2} ${el}`);
 				});
 			});
-			userdata[msg.author.id] = null;
+			ClearChoosen(msg);
 			AddChooseState(przedmioty_arrsend, "", msg);
 			SendBotMsgINCodeBlock(
 				`!odrabiamy <@${
@@ -178,7 +180,7 @@ bot.on("message", async function (msg) {
 					SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
 					odrabiamy.GetExercise(exs,choosen).then(base64=>{
 						
-						require("fs").writeFileSync("tmp.html",base64);
+						require("fs").writeFileSync("tmp.html",base64,'utf8');
 						SendBotMsg(`<@${msg.author.id}>`, msg);
 						msg.channel.send(`ZADANIE:`, {
 							files: ["./tmp.html"] 
@@ -198,6 +200,25 @@ bot.on("message", async function (msg) {
 		} else if (cmd.toLowerCase() === "back" || cmd.toLowerCase() === "b") {
 			BackChoosen(msg);
 			SendBotMsg(`BACKED`, msg);
+		} else if (cmd.toLowerCase() === "url") {
+			args = args.join(" ");
+				args = args.split(/[ ]+[|][ ]+/);
+				let min = Math.ceil(0);
+				let max = Math.floor(args.length);
+				let choosen = args[
+					Math.floor(Math.random() * (max - min) + min)
+				].trim();
+
+			SendBotMsg(`<@${msg.author.id}>`, msg);
+			SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
+			odrabiamy.GetEX(choosen).then(base64=>{
+				
+				require("fs").writeFileSync("tmp.html",base64,'utf8');
+				SendBotMsg(`<@${msg.author.id}>`, msg);
+				msg.channel.send(`ZADANIE:`, {
+					files: ["./tmp.html"] 
+				});
+			});
 		}
 		//else if() wsparcie dla innych komend
 		else {
@@ -242,13 +263,28 @@ function BackChoosen(msg) {
 		userdata[msg.author.id] = data;
 	}
 }
+function ClearChoosen(msg) {
+	if(!userdata)userdata = {};
+	if(!userdata[msg.author.id])userdata[msg.author.id] = [];
+	userdata[msg.author.id] = null;
+}
+function SetChoosen(msg,data) {
+	ClearChoosen(msg);
+	userdata[msg.author.id] = data;
+}
 SendBotMsg = function (content, msg) {
+	if(!messages[msg.author.id])messages[msg.author.id] = [];
+	messages[msg.author.id].push([0,content]);
+
 	splitcontent = SplitContent(content);
 	splitcontent.forEach((element) => {
 		msg.channel.send(element);
 	});
 };
 SendBotMsgINCodeBlock = function (content, msg, before, after) {
+	if(!messages[msg.author.id])messages[msg.author.id] = [];
+	messages[msg.author.id].push([1,[content,before,after]]);
+
 	splitcontent = SplitContent(content);
 	splitcontent.forEach((element, i) => {
 		if (splitcontent.length > 1) {
@@ -281,4 +317,14 @@ SplitContent = function(content){
 		});
 		splitcontent.push(str);
 		return splitcontent;
+}
+
+ResendMessage = function(msg,index){
+	try{
+	if(messages[index][0]==0){
+		SendBotMsg(messages[index][1],msg);
+	}
+	if(messages[index][0]==1){
+		SendBotMsg(messages[index][1][0],msg,messages[index][1][1],messages[index][1][2]);
+	}}catch{}
 }
