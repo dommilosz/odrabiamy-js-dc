@@ -107,9 +107,9 @@ module.exports.GetEX = async function odrabiamyGetExercise(href) {
 		);
 	} catch {}
 	await page.waitForSelector(".username");
-	try {
-		await page.waitFor(() => !document.querySelector(".freePart"));
-	} catch {}
+
+	await page.waitFor(() => !document.querySelector(".freePart"));
+	await page.waitForSelector('.exercise-solution')
 	await page.waitFor(500);
 
 	const sol = await page.evaluate(() => {
