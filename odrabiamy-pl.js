@@ -111,7 +111,13 @@ module.exports.GetEX = async function odrabiamyGetExercise(href)
 			let elements = document.getElementsByClassName('exercise-solution')[0].innerHTML;
 			return elements;
 		});
-    	return sol;
+
+		let screeshotArgs = {}
+		await page.setContent(sol)
+		const element = await page.$('body')
+		const buffer = await element.screenshot({ path: "./tmp.png", omitBackground: false, ...screeshotArgs })
+		await page.close();
+		return buffer
 }
 module.exports.GetCookie = async function(username,password) 
 {

@@ -61,7 +61,6 @@ bot.on("message", async function (msg) {
 			cmd.toLowerCase() === "choose" ||
 			cmd.toLowerCase() === "c"
 		) {
-			
 			if (
 				userdata[msg.author.id] &&
 				userdata[msg.author.id] != "none" &&
@@ -76,7 +75,7 @@ bot.on("message", async function (msg) {
 				].trim();
 				if (CheckChoosen(choosen, msg)) {
 					//sprawdz jezeli autor wiadomosci zainicjowal wczesniej !o
-					
+
 					if (userdata[msg.author.id][0] == 0) {
 						//sprawdz czy uzytkownik jest swiezo po wpisaniu !o i wybiera klase
 						let subj = Object.keys(
@@ -167,26 +166,26 @@ bot.on("message", async function (msg) {
 						"```diff\n",
 						"```\n"
 					);
-				}else if (userdata[msg.author.id][0] == 4) {
+				} else if (userdata[msg.author.id][0] == 4) {
 					//wyslij zadanie
 					books = odrabiamy.getBooksBySubject(
 						userdata_prev[msg.author.id][1],
 						userdata_prev[msg.author.id][2]
 					);
 					book = books[userdata_prev[msg.author.id][3]];
-					exs = odrabiamy.getExList(book, userdata_prev[msg.author.id][4]);
+					exs = odrabiamy.getExList(
+						book,
+						userdata_prev[msg.author.id][4]
+					);
 					ex = exs[choosen];
 					SendBotMsg(`<@${msg.author.id}>`, msg);
-					SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
-					odrabiamy.GetExercise(exs,choosen).then(base64=>{
-						
-						require("fs").writeFileSync("tmp.html",base64,'utf8');
-						SendBotMsg(`<@${msg.author.id}>`, msg);
-						msg.channel.send(`ZADANIE:`, {
-							files: ["./tmp.html"] 
-						});
+					SendBotMsg(
+						`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`,
+						msg
+					);
+					odrabiamy.GetExercise(exs, choosen).then((base64) => {
+						SendEx(msg, base64);
 					});
-					
 				} else {
 					SendBotMsg(
 						`ERROR 404. Co ty wpisales? \`${choosen}\``,
@@ -202,22 +201,17 @@ bot.on("message", async function (msg) {
 			SendBotMsg(`BACKED`, msg);
 		} else if (cmd.toLowerCase() === "url") {
 			args = args.join(" ");
-				args = args.split(/[ ]+[|][ ]+/);
-				let min = Math.ceil(0);
-				let max = Math.floor(args.length);
-				let choosen = args[
-					Math.floor(Math.random() * (max - min) + min)
-				].trim();
+			args = args.split(/[ ]+[|][ ]+/);
+			let min = Math.ceil(0);
+			let max = Math.floor(args.length);
+			let choosen = args[
+				Math.floor(Math.random() * (max - min) + min)
+			].trim();
 
 			SendBotMsg(`<@${msg.author.id}>`, msg);
 			SendBotMsg(`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`, msg);
-			odrabiamy.GetEX(choosen).then(base64=>{
-				
-				require("fs").writeFileSync("tmp.html",base64,'utf8');
-				SendBotMsg(`<@${msg.author.id}>`, msg);
-				msg.channel.send(`ZADANIE:`, {
-					files: ["./tmp.html"] 
-				});
+			odrabiamy.GetEX(choosen).then((base64) => {
+				SendEx(msg, base64);
 			});
 		}
 		//else if() wsparcie dla innych komend
@@ -264,17 +258,17 @@ function BackChoosen(msg) {
 	}
 }
 function ClearChoosen(msg) {
-	if(!userdata)userdata = {};
-	if(!userdata[msg.author.id])userdata[msg.author.id] = [];
+	if (!userdata) userdata = {};
+	if (!userdata[msg.author.id]) userdata[msg.author.id] = [];
 	userdata[msg.author.id] = null;
 }
-function SetChoosen(msg,data) {
+function SetChoosen(msg, data) {
 	ClearChoosen(msg);
 	userdata[msg.author.id] = data;
 }
 SendBotMsg = function (content, msg) {
-	if(!messages[msg.author.id])messages[msg.author.id] = [];
-	messages[msg.author.id].push([0,content]);
+	if (!messages[msg.author.id]) messages[msg.author.id] = [];
+	messages[msg.author.id].push([0, content]);
 
 	splitcontent = SplitContent(content);
 	splitcontent.forEach((element) => {
@@ -282,8 +276,8 @@ SendBotMsg = function (content, msg) {
 	});
 };
 SendBotMsgINCodeBlock = function (content, msg, before, after) {
-	if(!messages[msg.author.id])messages[msg.author.id] = [];
-	messages[msg.author.id].push([1,[content,before,after]]);
+	if (!messages[msg.author.id]) messages[msg.author.id] = [];
+	messages[msg.author.id].push([1, [content, before, after]]);
 
 	splitcontent = SplitContent(content);
 	splitcontent.forEach((element, i) => {
@@ -296,35 +290,47 @@ SendBotMsgINCodeBlock = function (content, msg, before, after) {
 	});
 };
 
-SplitContent = function(content){
-		//dzielenie przez 2000 \\DONE
-		var maxlength = 1990;
-		var splitcontent_br = content.split("\n");
-		var splitcontent = [];
-		var str = "";
-		splitcontent_br.forEach((element) => {
-			if (str.length < maxlength) {
+SplitContent = function (content) {
+	//dzielenie przez 2000 \\DONE
+	var maxlength = 1990;
+	var splitcontent_br = content.split("\n");
+	var splitcontent = [];
+	var str = "";
+	splitcontent_br.forEach((element) => {
+		if (str.length < maxlength) {
+			if ((str + element).length <= maxlength) {
+				str += element + "\n";
+			} else {
+				splitcontent.push(str);
+				str = "";
 				if ((str + element).length <= maxlength) {
 					str += element + "\n";
-				} else {
-					splitcontent.push(str);
-					str = "";
-					if ((str + element).length <= maxlength) {
-						str += element + "\n";
-					}
 				}
 			}
-		});
-		splitcontent.push(str);
-		return splitcontent;
-}
+		}
+	});
+	splitcontent.push(str);
+	return splitcontent;
+};
 
-ResendMessage = function(msg,index){
-	try{
-	if(messages[index][0]==0){
-		SendBotMsg(messages[index][1],msg);
-	}
-	if(messages[index][0]==1){
-		SendBotMsg(messages[index][1][0],msg,messages[index][1][1],messages[index][1][2]);
-	}}catch{}
-}
+ResendMessage = function (msg, index) {
+	try {
+		if (messages[index][0] == 0) {
+			SendBotMsg(messages[index][1], msg);
+		}
+		if (messages[index][0] == 1) {
+			SendBotMsg(
+				messages[index][1][0],
+				msg,
+				messages[index][1][1],
+				messages[index][1][2]
+			);
+		}
+	} catch {}
+};
+SendEx = function (msg, base64) {
+	SendBotMsg(`<@${msg.author.id}>`, msg);
+	msg.channel.send(`ZADANIE:`, {
+		files: ["./tmp.png"]
+	});
+};
