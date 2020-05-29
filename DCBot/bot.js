@@ -226,6 +226,9 @@ bot.on("message", async function (msg) {
 				);
 				odrabiamy.GetEX(choosen).then((base64) => {
 					SendEx(msg, base64);
+				}).catch(ex=>{
+					SendError(msg,ex);
+					throw ex;
 				});
 			} else if (
 				cmd.toLowerCase() === "back" ||
@@ -246,7 +249,7 @@ bot.on("message", async function (msg) {
 				);
 			}
 		} catch(ex) {
-			SendBotMsg(JSON.stringify(ex),msg);
+			SendError(msg,ex);
 		}
 	}
 });
@@ -384,10 +387,23 @@ SendEx = function (msg, base64) {
 };
 
 Reload = function (msg) {
-	if(msg.author.id=="410416517860032523"){
+	if(IsAuthorised(msg)){
 		odrabiamy.GetData();
 		return "succes!";
 	}
 	return "You don't have permission"
 	
 };
+SendError = function(msg,error){
+	error = error.message
+	before = "```diff\n";
+	after = "\n```";
+	splitcontent = SplitContent(error);
+	splitcontent.forEach((element, i) => {
+		element = '- '+element;
+		msg.channel.send(before+element+after); 
+	});
+}
+IsAuthorised = function(msg){
+	if(msg.author.id=="410416517860032523"){return true;}return false;
+}

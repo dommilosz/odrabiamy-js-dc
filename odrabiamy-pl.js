@@ -95,21 +95,24 @@ const puppeter = require("puppeteer");
 browser = null;
 cookies = "";
 module.exports.GetEX = async function odrabiamyGetExercise(href) {
-	if (browser == null) await launchbrowser(false);
-	let page = await browser.newPage();
-	await page.setCookie(...cookies);
-	await page.goto(href);
+	if (browser == null) await launchbrowser(false).catch(ex=>{throw ex});
+	let page = await browser.newPage().catch(ex=>{throw ex});
+	await page.setCookie(...cookies).catch(ex=>{throw ex});
+	await page.goto(href).catch(ex=>{
+		page.close();
+		throw ex
+	});
 	await page.waitFor(500);
 
 	try {
 		await page.click(
 			"#frontend-root > div > div.rodo-modal-blur > div > div > div.rodo-form > div > div.buttons.rodo-box-item > button"
-		);
+		).catch(_=>{});
 	} catch {}
-	await page.waitForSelector(".username");
+	await page.waitForSelector(".username").catch(ex=>{throw ex});
 
-	await page.waitFor(() => !document.querySelector(".freePart"));
-	await page.waitForSelector('.exercise-solution')
+	await page.waitFor(() => !document.querySelector(".freePart")).catch(ex=>{throw ex});
+	await page.waitForSelector('.exercise-solution').catch(ex=>{throw ex});
 	await page.waitFor(500);
 
 	const sol = await page.evaluate(() => {
@@ -119,14 +122,14 @@ module.exports.GetEX = async function odrabiamyGetExercise(href) {
 	});
 
 	let screeshotArgs = {};
-	await page.setContent(sol);
-	const element = await page.$("body");
+	await page.setContent(sol).catch(ex=>{throw ex});
+	const element = await page.$("body").catch(ex=>{throw ex});
 	const buffer = await element.screenshot({
 		path: "./tmp.png",
 		omitBackground: false,
 		...screeshotArgs
-	});
-	await page.close();
+	}).catch(ex=>{throw ex});
+	await page.close().catch(ex=>{throw ex});
 	return buffer;
 };
 module.exports.GetCookie = async function (username, password) {
