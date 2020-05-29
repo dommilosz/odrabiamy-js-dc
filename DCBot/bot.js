@@ -224,22 +224,23 @@ bot.on("message", async function (msg) {
 					`Wybrano \`${choosen}\`\nPoczekaj na rozwiazanie`,
 					msg
 				);
-				odrabiamy.GetEX(choosen).then((base64) => {
-					SendEx(msg, base64);
-				}).catch(ex=>{
-					SendError(msg,ex);
-					throw ex;
-				});
+				odrabiamy
+					.GetEX(choosen)
+					.then((base64) => {
+						SendEx(msg, base64);
+					})
+					.catch((ex) => {
+						SendError(msg, ex);
+						throw ex;
+					});
 			} else if (
 				cmd.toLowerCase() === "back" ||
 				cmd.toLowerCase() === "b"
 			) {
 				BackChoosen(msg);
 				ResendMessage(msg, userdata[msg.author.id][0]);
-			}else if (
-				cmd.toLowerCase() === "reload"
-			) {
-				SendBotMsg(Reload(msg),msg)
+			} else if (cmd.toLowerCase() === "reload") {
+				SendBotMsg(Reload(msg), msg);
 			}
 			//else if() wsparcie dla innych komend
 			else {
@@ -248,8 +249,8 @@ bot.on("message", async function (msg) {
 					msg
 				);
 			}
-		} catch(ex) {
-			SendError(msg,ex);
+		} catch (ex) {
+			SendError(msg, ex);
 		}
 	}
 });
@@ -301,8 +302,7 @@ function SetChoosen(msg, data) {
 	userdata[msg.author.id] = data;
 }
 SendBotMsg = function (content, msg, log) {
-	
-	if (log && log == true){
+	if (log && log == true) {
 		if (!messages[msg.author.id]) messages[msg.author.id] = [];
 		if (!messages[msg.author.id][userdata[msg.author.id][0]]) {
 			messages[msg.author.id].push("");
@@ -317,8 +317,7 @@ SendBotMsg = function (content, msg, log) {
 	});
 };
 SendBotMsgINCodeBlock = function (content, msg, before, after, log) {
-
-	if (log && log == true){
+	if (log && log == true) {
 		if (!messages[msg.author.id]) messages[msg.author.id] = [];
 		if (!messages[msg.author.id][userdata[msg.author.id][0]]) {
 			messages[msg.author.id].push("");
@@ -387,23 +386,25 @@ SendEx = function (msg, base64) {
 };
 
 Reload = function (msg) {
-	if(IsAuthorised(msg)){
+	if (IsAuthorised(msg)) {
 		odrabiamy.GetData();
 		return "succes!";
 	}
-	return "You don't have permission"
-	
+	return "You don't have permission";
 };
-SendError = function(msg,error){
-	error = error.message
+SendError = function (msg, error) {
+	error = error.message;
 	before = "```diff\n";
 	after = "\n```";
 	splitcontent = SplitContent(error);
 	splitcontent.forEach((element, i) => {
-		element = '- '+element;
-		msg.channel.send(before+element+after); 
+		element = "- " + element;
+		msg.channel.send(before + element + after);
 	});
-}
-IsAuthorised = function(msg){
-	if(msg.author.id=="410416517860032523"){return true;}return false;
-}
+};
+IsAuthorised = function (msg) {
+	if (msg.author.id == "410416517860032523") {
+		return true;
+	}
+	return false;
+};
