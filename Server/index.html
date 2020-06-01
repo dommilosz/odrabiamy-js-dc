@@ -1,11 +1,259 @@
 <html>
 	<head>
-		<title>2Bored2Wait</title>
+		<title>Odrabiamy NPM</title>
 		<link rel="stylesheet" href="index.css" />
+		<script>
+			JSON_RESP = {};
+			Ksiazki = {};
+			Ksiazki_Subjects = {};
+
+			GetData = function () {
+				var req = new XMLHttpRequest();
+				req.open("GET", `/data?hash=${hash}?username=${user}`, false);
+				req.send(null);
+				if (req.status != 200) return;
+
+				this.JSON_RESP = JSON.parse(req.responseText);
+
+				this.JSON_RESP.forEach((el) => {
+					var donegrades = [];
+					var grades = el.grades;
+					var subj = el.subject;
+
+					grades.forEach((el2) => {
+						if (!this.Ksiazki[el2]) {
+							this.Ksiazki[el2] = [];
+						}
+						if (!donegrades.includes(el2)) {
+							this.Ksiazki[el2].push(el);
+							donegrades.push(el2);
+							if (!this.Ksiazki_Subjects[el2])
+								this.Ksiazki_Subjects[el2] = {};
+							if (!this.Ksiazki_Subjects[el2][subj]) {
+								this.Ksiazki_Subjects[el2][subj] = [];
+							}
+							this.Ksiazki_Subjects[el2][subj].push(el);
+						}
+					});
+				});
+			};
+
+			getBookByID = function (klasa, id) {
+				var matching = "";
+				this.Ksiazki[klasa].forEach((el) => {
+					if (el.id == parseInt(id)) {
+						matching = el;
+					}
+				});
+				return matching;
+			};
+			getBooksByClass = function (klasa) {
+				return this.Ksiazki[klasa];
+			};
+			getBooksBySubject = function (klasa, subj) {
+				return this.Ksiazki_Subjects[klasa][subj];
+			};
+			getALLBooks = function () {
+				return this.Ksiazki;
+			};
+			getPagesOfBook = function (book) {
+				return book.pages;
+			};
+		</script>
+		<script>
+			sel_enabled = true;
+			function UpdateEnabled(_enabled) {
+				sel_enabled = _enabled;
+				function Disable(element, index, array) {
+					element.disabled = !sel_enabled;
+				}
+				document.querySelectorAll("select").forEach(Disable);
+			}
+			function GetBooks() {
+				let selclass = document.getElementsByClassName(
+					"listbox-books"
+				)[0];
+				books = getBooksBySubject(
+					document
+						.getElementsByClassName("listbox-class")[0]
+						.value.split("##@sp")
+						.join(" "),
+					document
+						.getElementsByClassName("listbox-subjects")[0]
+						.value.split("##@sp")
+						.join(" ")
+				);
+				books_arr = [];
+				indexes = [];
+				books.forEach((el, i) => {
+					books_arr.push(el.friendly_name);
+				});
+				selclass.innerHTML = `<option value="-1">Wybierz Ksiazke</option>`;
+				books_arr.forEach((element, i) => {
+					selclass.innerHTML += `<option value=${i}>${element}</option>`;
+				});
+			}
+			function GetOptn() {
+				books = getBooksBySubject(
+					document
+						.getElementsByClassName("listbox-class")[0]
+						.value.split("##@sp")
+						.join(" "),
+					document
+						.getElementsByClassName("listbox-subjects")[0]
+						.value.split("##@sp")
+						.join(" ")
+				);
+				book =
+					books[
+						document
+							.getElementsByClassName("listbox-books")[0]
+							.value.split("##@sp")
+							.join(" ")
+					];
+				let selclass = document.getElementsByClassName(
+					"listbox-pages"
+				)[0];
+				selclass.innerHTML = `<option value="-1">Wybierz Strone</option>`;
+				book.pages.forEach((element) => {
+					selclass.innerHTML += `<option value=${element}>${element}</option>`;
+				});
+			}
+			function GetExercises() {
+				let selclass = document.getElementsByClassName(
+					"listbox-exercises"
+				)[0];
+				page = document.getElementsByClassName("listbox-pages")[0]
+					.value;
+				var req = new XMLHttpRequest();
+				req.open(
+					"GET",
+					`/ex?hash=${encodeURIComponent(hash)}?username=${encodeURIComponent(user)}?book=${encodeURIComponent(book.id)}?page=${encodeURIComponent(page)}?klasa=${encodeURIComponent(klasa)}`,
+					false
+				);
+				req.send(null);
+				if (req.status != 200) return;
+				exs = JSON.parse(req.responseText);
+				selclass.innerHTML = `<option value="-1">Wybierz Zadanie</option>`;
+				exs.forEach((element, i) => {
+					selclass.innerHTML += `<option value=${i}>${element.number}</option>`;
+				});
+			}
+			function GetEx() {
+				let selclass = document.getElementsByClassName(
+					"result"
+				)[0];
+				page = document.getElementsByClassName("listbox-pages")[0]
+					.value;
+					exid = document.getElementsByClassName("listbox-exercises")[0]
+					.value;
+				var req = new XMLHttpRequest();
+				req.open(
+					"GET",
+					`/ex?hash=${encodeURIComponent(hash)}?username=${encodeURIComponent(user)}?book=${encodeURIComponent(book.id)}?page=${encodeURIComponent(page)}?klasa=${encodeURIComponent(klasa)}?exid=${exid}`,
+					false
+				);
+				req.send(null);
+				if (req.status != 200) return;
+				ex = JSON.parse(req.responseText);
+				ex = btoa(String.fromCharCode.apply(null, new Uint8Array(ex.data)));
+				selclass.src =  "data:image/png;base64,"+ex;
+			}
+			hash;
+			user;
+			function SetHash() {
+				url = location.href;
+				params = {};
+				url.split("?")
+					.slice(1, 1024)
+					.forEach((element) => {
+						params[element.split("=")[0]] = decodeURI(
+							element.split("=")[1]
+						);
+					});
+				if (params.hash) {
+					hash = params.hash;
+					user = params.username;
+				}
+			}
+			function GetSubjects() {
+				klasa = document
+							.getElementsByClassName("listbox-class")[0]
+							.value.split("##@sp")
+							.join(" ");
+				books =
+					Ksiazki_Subjects[
+						document
+							.getElementsByClassName("listbox-class")[0]
+							.value.split("##@sp")
+							.join(" ")
+					];
+				let subj = Object.keys(books);
+				let selclass = document.getElementsByClassName(
+					"listbox-subjects"
+				)[0];
+				subj.forEach((element, i) => {
+					subj[i] = element;
+				});
+				selclass.innerHTML = `<option value="-1">Wybierz Przedmiot</option>`;
+				Object.keys(subj).forEach((element) => {
+					element = subj[element];
+					selclass.innerHTML += `<option value=${element
+						.split(" ")
+						.join("##@sp")}>${element}</option>`;
+				});
+			}
+			function OnLoad() {
+				SetHash();
+				let selclass = document.getElementsByClassName(
+					"listbox-class"
+				)[0];
+				GetData();
+				selclass.innerHTML = `<option value="-1">Wybierz Klase</option>`;
+				let przedmioty = Object.keys(Ksiazki).sort();
+				let przedmioty_arr = {};
+				let przedmioty_arrsend = [];
+				przedmioty.forEach((element) => {
+					if (
+						!przedmioty_arr[
+							element.split(" ").slice(1, 1024).join(" ")
+						]
+					)
+						przedmioty_arr[
+							element.split(" ").slice(1, 1024).join(" ")
+						] = [];
+					przedmioty_arr[
+						element.split(" ").slice(1, 1024).join(" ")
+					].push(element.split(" ").slice(0, 1).join(" "));
+				});
+				Object.keys(przedmioty_arr).forEach((el) => {
+					przedmioty_arr[el].forEach((el2) => {
+						if (el2 != "") przedmioty_arrsend.push(`${el2} ${el}`);
+					});
+				});
+				Ksiazki = przedmioty_arrsend;
+				Ksiazki.forEach((element) => {
+					selclass.innerHTML += `<option value=${element
+						.split(" ")
+						.join("##@sp")}>${element}</option>`;
+				});
+			}
+		</script>
 	</head>
-	<body onload="" style="color: white;">
-		GZ
-		<br><br>
-		
+	<body onload="OnLoad()">
+		<div class="content">
+			<select class="listbox-class" onchange="GetSubjects()">
+				<option value="-1">Wybierz Klase</option>
+			</select>
+			<select class="listbox-subjects" onchange="GetBooks()"> </select>
+			<select class="listbox-books" onchange="GetOptn()"> </select>
+			<select class="listbox-pages" onchange="GetExercises()"> </select>
+			<select class="listbox-exercises" onchange="GetEx()"> </select
+			><br />
+			<textarea class="output-ex" readonly="true"></textarea>
+			<div>
+				<img class="result" />
+			</div>
+		</div>
 	</body>
 </html>

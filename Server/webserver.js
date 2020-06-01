@@ -13,7 +13,7 @@ module.exports.GetParams = function(req){
 	url = req.originalUrl
 	params = {};
 	url.split("?").slice(1,1024).forEach(element => {
-		params[element.split('=')[0]] =  decodeURI(element.split('=')[1]);
+		params[element.split('=')[0]] =  decodeURIComponent(element.split('=')[1]);
 	});
 	return params
 }
