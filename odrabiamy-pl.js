@@ -112,9 +112,9 @@ module.exports.GetEX = async function odrabiamyGetExercise(href) {
 	await page.waitForSelector(".username").catch(ex=>{throw ex});
 
 	await page.waitFor(() => !document.querySelector(".freePart")).catch(ex=>{throw ex});
-	await page.waitForSelector('.exercise-solution').catch(ex=>{throw ex});
 	await page.waitFor(500);
-
+	await page.waitForSelector('.exercise-solution').catch(ex=>{throw ex});
+	
 	const sol = await page.evaluate(() => {
 		let elements = document.getElementsByClassName("exercise-solution")[0]
 			.innerHTML;

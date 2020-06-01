@@ -245,7 +245,7 @@ bot.on("message", async function (msg) {
 			//else if() wsparcie dla innych komend
 			else {
 				SendBotMsg(
-					"Niepoprawna komenda, wspierane polecenia:\n- `!Odrabiamy [grade] [subject] [page] [example]`\n- `//TODO: !Odrabiamy list [grade]/[subject]`\n - `!Choose [arg1] | [arg2] | [arg3] ...`",
+					"Niepoprawna komenda, wspierane polecenia:\n- `!o[drabiamy]`\n- `!c[hoose] <element>`",
 					msg
 				);
 			}
