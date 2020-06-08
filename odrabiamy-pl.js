@@ -2,6 +2,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 module.exports.JSON_RESP = {};
 module.exports.Ksiazki = {};
 module.exports.Ksiazki_Subjects = {};
+const fs = require('fs');
 
 module.exports.REQ_GET = function REQ_GET(url) {
 	var xmlHttp = new XMLHttpRequest();
@@ -74,11 +75,13 @@ module.exports.getPagesOfBook = function (book) {
 	return book.pages;
 };
 module.exports.getExList = function (book, page) {
+	let requid = StartRequestTimer();
 	let resp = JSON.parse(
 		this.REQ_GET(
 			`https://odrabiamy.pl/api/v1.3/ksiazki/${book.id}/zadania/strona/${page}/`
 		)
 	);
+	this.RequestTook = EndRequestTimer(requid);
 	return resp;
 };
 module.exports.GetExercise = function (ex, index) {
@@ -95,10 +98,11 @@ const puppeter = require("puppeteer");
 browser = null;
 cookies = "";
 module.exports.GetEX = async function odrabiamyGetExercise(href) {
-	if (browser == null) await launchbrowser(false).catch(ex=>{throw ex});
+	let requid = StartRequestTimer();
+	if (browser == null) await launchbrowser(true).catch(ex=>{throw ex});
 	let page = await browser.newPage().catch(ex=>{throw ex});
 	await page.setCookie(...cookies).catch(ex=>{throw ex});
-	await page.goto(href).catch(ex=>{
+	await page.goto(href,{waitUntil: 'load', timeout: 300000}).catch(ex=>{
 		page.close();
 		throw ex
 	});
@@ -109,11 +113,11 @@ module.exports.GetEX = async function odrabiamyGetExercise(href) {
 			"#frontend-root > div > div.rodo-modal-blur > div > div > div.rodo-form > div > div.buttons.rodo-box-item > button"
 		).catch(_=>{});
 	} catch {}
-	await page.waitForSelector(".username").catch(ex=>{throw ex});
+	await page.waitForSelector(".username",{timeout: 300000}).catch(ex=>{throw ex});
 
 	await page.waitFor(() => !document.querySelector(".freePart")).catch(ex=>{throw ex});
 	await page.waitFor(500);
-	await page.waitForSelector('.exercise-solution').catch(ex=>{throw ex});
+	await page.waitForSelector('.exercise-solution',{timeout: 300000}).catch(ex=>{throw ex});
 	
 	const sol = await page.evaluate(() => {
 		let elements = document.getElementsByClassName("exercise-solution")[0]
@@ -130,34 +134,50 @@ module.exports.GetEX = async function odrabiamyGetExercise(href) {
 		...screeshotArgs
 	}).catch(ex=>{throw ex});
 	await page.close().catch(ex=>{throw ex});
+	this.RequestTook = EndRequestTimer(requid);
 	return buffer;
 };
+module.exports.RequestTook = 0;
 module.exports.GetCookie = async function (username, password) {
 	await launchbrowser(true);
 	let page = await browser.newPage();
-	await page.goto("https://odrabiamy.pl/?signIn=true&type=Login");
+	let logged = false; 
+	try{
+		let ckie = JSON.parse(fs.readFileSync('./cookies.json'))
+		await page.setCookie(...ckie)
+		logged = true; 
+	}catch{
+
+	}
+	await page.goto("https://odrabiamy.pl/?signIn=true&type=Login",{waitUntil: 'load', timeout: 300000});
+	await page.waitForSelector(".username", {timeout: 500}).catch(_=>{
+		logged = false;
+	})
+	if(!logged){
 	await page.type(".form-control[name=login]", username);
-	await page.type(".form-control[name=password]", password);
-	await page.waitForSelector(".username");
+	await page.type(".form-control[name=password]", password);}
+	await page.waitForSelector(".username", {timeout: 300000});
 	await page.waitFor(500);
 	cookies = await page.cookies();
-	page.close();
-	browser.close();
+	fs.writeFileSync('./cookies.json',JSON.stringify(cookies));
+	await page.close();
+	await browser.close();
 	browser = null;
 };
 
-launchbrowser = async function (devtools) {
+launchbrowser = async function (visible) {
+	headless = !visible
 	try {
 		browser = await puppeter.launch({
 			args: ["--no-sandbox"],
-			devtools: devtools
+			headless: headless
 		});
 	} catch (ex) {
 		try {
 			console.log(ex);
 			browser = await puppeter.launch({
 				executablePath: "chromium-browser",
-				devtools: devtools
+				headless: headless
 			});
 		} catch {
 			browser = await puppeter.launch({
@@ -168,10 +188,23 @@ launchbrowser = async function (devtools) {
 					"--disable-features=site-per-process",
 					"--no-sandbox"
 				],
-				headless: true,
+				headless: headless,
 				executablePath: "/usr/bin/chromium-browser",
 				devtools: devtools
 			});
 		}
 	}
 };
+
+requests = {}
+StartRequestTimer = function(){
+	let start = Math.floor(new Date());
+	let id = Math.floor( Math.random()*1000);
+	requests[id] = start;
+	return id;
+}
+EndRequestTimer = function(id){
+	let end = Math.floor(new Date());
+	let timer = end - requests[id]
+	return timer;
+}

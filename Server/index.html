@@ -133,8 +133,10 @@
 				);
 				req.send(null);
 				if (req.status != 200) return;
-				exs = JSON.parse(req.responseText);
+				exsdata = JSON.parse(req.responseText);
 				selclass.innerHTML = `<option value="-1">Wybierz Zadanie</option>`;
+				exs = exsdata.data;
+				LogToTxtbox(`Request took: ${exsdata.took}`);
 				exs.forEach((element, i) => {
 					selclass.innerHTML += `<option value=${i}>${element.number}</option>`;
 				});
@@ -155,7 +157,9 @@
 				);
 				req.send(null);
 				if (req.status != 200) return;
-				ex = JSON.parse(req.responseText);
+				exdata = JSON.parse(req.responseText);
+				ex = exdata.data;
+				LogToTxtbox(`Request took: ${exdata.took}`);
 				ex = btoa(String.fromCharCode.apply(null, new Uint8Array(ex.data)));
 				selclass.src =  "data:image/png;base64,"+ex;
 			}
@@ -237,6 +241,9 @@
 						.split(" ")
 						.join("##@sp")}>${element}</option>`;
 				});
+			}
+			function LogToTxtbox(string){
+				document.getElementsByClassName('output-ex')[0].value += `${string}\n`
 			}
 		</script>
 	</head>

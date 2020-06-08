@@ -168,7 +168,7 @@ bot.on("message", async function (msg) {
 						SendBotMsg(`<@${msg.author.id}>`, msg);
 						SendBotMsg(`Wybrano \`${choosen}\``, msg);
 						SendBotMsgINCodeBlock(
-							`Wybierz Zadanie:  \`\`\`diff\n${towritearr.join(
+							`Wybierz Zadanie: (TOOK ${odrabiamy.RequestTook}ms) \`\`\`diff\n${towritearr.join(
 								"\n"
 							)} \`\`\`\n!c[hoose] <nazwa>`,
 							msg,
@@ -380,7 +380,7 @@ ResendMessage = function (msg, index) {
 };
 SendEx = function (msg, base64) {
 	SendBotMsg(`<@${msg.author.id}>`, msg);
-	msg.channel.send(`ZADANIE:`, {
+	msg.channel.send(`ZADANIE: (TOOK ${odrabiamy.RequestTook}ms)`, {
 		files: ["./tmp.png"]
 	});
 };

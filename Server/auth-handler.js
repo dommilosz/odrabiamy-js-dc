@@ -58,7 +58,7 @@ function CheckHash(hash, username) {
 			return false;
 		}
 		updated = ts - hashes_arr.lastupdated[i];
-		if (updated < 60) {
+		if (updated < 300) {
 			console.log(
 				`Validating hash "${hash}" for username "${username}". VALID`
 			);

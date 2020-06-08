@@ -74,13 +74,20 @@ server.get('/ex',function(req, res) {
              let book = odrabiamyjs.getBookByID(params.klasa,params.book)
              let exs = odrabiamyjs.getExList(book,params.page);
              let ex = odrabiamyjs.GetExercise(exs,params.exid).then(r=>{
-                res.write(JSON.stringify(r))
+                let data = {};
+                data.data = r;
+                data.took = odrabiamyjs.RequestTook;
+                res.write(JSON.stringify(data))
                 res.end()
              });
             
         }else
         if(params.page&&params.book){
-            res.write(JSON.stringify(odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page)))
+            let r = (odrabiamyjs.getExList(odrabiamyjs.getBookByID(params.klasa,params.book),params.page));
+            let data = {};
+            data.data = r;
+            data.took = odrabiamyjs.RequestTook;
+            res.write(JSON.stringify(data))
             res.end()
         }
         
