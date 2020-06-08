@@ -16,6 +16,7 @@ userdata = {};
 favdata = {};
 userdata_prev = {};
 messages = {};
+locked = false;
 
 bot.on("message", async function (msg) {
 	if (msg.content.startsWith("!")) {
@@ -25,6 +26,10 @@ bot.on("message", async function (msg) {
 			let wiad = msg.content.slice(1).trim();
 			let args = wiad.split(/[ ]+/);
 			let cmd = args.shift();
+			if(locked&&cmd.toLocaleLowerCase()!='lock'){
+				msg.channel.send('Bot is currently locked');
+				return;
+			}
 			if (
 				cmd.toLowerCase() === "odrabiamy" ||
 				cmd.toLowerCase() === "o"
@@ -241,6 +246,8 @@ bot.on("message", async function (msg) {
 				ResendMessage(msg, userdata[msg.author.id][0]);
 			} else if (cmd.toLowerCase() === "reload") {
 				SendBotMsg(Reload(msg), msg);
+			}else if (cmd.toLowerCase() === "lock") {
+				SendBotMsg(Lock(msg), msg);
 			}
 			//else if() wsparcie dla innych komend
 			else {
@@ -408,3 +415,12 @@ IsAuthorised = function (msg) {
 	}
 	return false;
 };
+
+Lock = function(msg){
+	if(IsAuthorised(msg)){
+		locked = !locked;
+		return `Lock is ${locked}`;
+	}else{
+		return 'Not authorised';
+	}
+}

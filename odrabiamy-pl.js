@@ -99,7 +99,7 @@ browser = null;
 cookies = "";
 module.exports.GetEX = async function odrabiamyGetExercise(href) {
 	let requid = StartRequestTimer();
-	if (browser == null) await launchbrowser(true).catch(ex=>{throw ex});
+	if (browser == null) await launchbrowser(false).catch(ex=>{throw ex});
 	let page = await browser.newPage().catch(ex=>{throw ex});
 	await page.setCookie(...cookies).catch(ex=>{throw ex});
 	await page.goto(href,{waitUntil: 'load', timeout: 300000}).catch(ex=>{
